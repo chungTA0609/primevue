@@ -6,6 +6,7 @@
       class="layout-menu"
       @menuitem-click="onMenuItemClick"
     ></SubMenu>
+    <!-- <li v-if="item.separator" class="menu-separator"></li> -->
     <a href="https://www.primefaces.org/primeblocks-vue" class="block mt-3">
       <img
         alt="primeblocks"
