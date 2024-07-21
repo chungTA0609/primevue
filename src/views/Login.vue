@@ -91,7 +91,11 @@
                 >Forgot password?</a
               >
             </div>
-            <Button label="Sign In" class="w-full p-3 text-xl"></Button>
+            <Button
+              label="Sign In"
+              class="w-full p-3 text-xl"
+              @click="login()"
+            ></Button>
           </div>
         </div>
       </div>
@@ -101,12 +105,30 @@
 
 <script setup>
 import { computed, ref } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 const email = ref("");
 const password = ref("");
 const checked = ref(false);
+
+const store = useStore();
+const router = useRouter();
+
 const logoColor = computed(() => {
   return "white";
 });
+
+const login = async () => {
+  try {
+    const res = await store.dispatch("auth/login", {
+      email: email.value,
+      password: password.value,
+    });
+    router.push("/");
+  } catch (error) {
+    console.log(error);
+  }
+};
 </script>
 
 <style scoped>

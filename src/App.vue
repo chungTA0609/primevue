@@ -1,34 +1,7 @@
-<script setup lang="ts">
-import AppTopBar from "./views/TopBar.vue";
-import AppMenu from "./views/Menu.vue";
-import Menu from "./constants/menu";
-import { ref } from "vue";
-const layoutMode = ref("static");
-const staticMenuInactive = ref(false);
-const overlayMenuActive = ref(false);
-const mobileMenuActive = ref(false);
-const onMenuItemClick = (event: any) => {
-  if (event.item && !event.item.items) {
-    overlayMenuActive.value = false;
-    mobileMenuActive.value = false;
-  }
-};
-</script>
+<script setup lang="ts"></script>
 
 <template>
-  <div class="">
-    <!-- top bar start-->
-    <AppTopBar />
-    <div class="layout-sidebar">
-      <AppMenu :model="Menu" @menuitem-click="onMenuItemClick" />
-    </div>
-    <!-- top bar end -->
-    <div class="layout-main-container">
-      <div class="layout-main">
-        <router-view></router-view>
-      </div>
-    </div>
-  </div>
+  <router-view></router-view>
 </template>
 
 <style scoped>

@@ -11,6 +11,7 @@
   "dependencies": {
     "@popperjs/core": "^2.11.8",
     "@primevue/themes": "^4.0.0",
+    "axios": "^1.7.2",
     "chart.js": "^4.4.3",
     "primeflex": "^3.3.1",
     "primeicons": "^7.0.0",
@@ -18,7 +19,8 @@
     "prismjs": "^1.29.0",
     "vue": "^3.4.29",
     "vue-router": "^4.4.0",
-    "vuex": "^4.1.0"
+    "vuex": "^4.0.2",
+    "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
     "@primevue/auto-import-resolver": "^4.0.0",

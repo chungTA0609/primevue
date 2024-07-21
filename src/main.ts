@@ -91,6 +91,7 @@ import TreeSelect from "primevue/treeselect";
 import TreeTable from "primevue/treetable";
 import App from "./App.vue";
 import Lara from "@primevue/themes/lara";
+import store from "./store";
 router.beforeEach(function (to, from, next) {
   window.scrollTo(0, 0);
   next();
@@ -100,6 +101,7 @@ const app = createApp(App);
 app.use(ConfirmationService);
 app.use(ToastService);
 app.use(router);
+app.use(store);
 
 app.directive("tooltip", Tooltip);
 app.directive("ripple", Ripple);
