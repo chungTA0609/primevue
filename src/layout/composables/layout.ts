@@ -1,4 +1,4 @@
-import { computed, reactive, toRefs } from "vue";
+import { toRefs, reactive, computed } from "vue";
 
 const layoutConfig = reactive({
   ripple: true,
@@ -20,12 +20,20 @@ const layoutState = reactive({
 });
 
 export function useLayout() {
-  const onMenuToggled = () => {
+  const setScale = (scale: any) => {
+    layoutConfig.scale = scale;
+  };
+
+  const setActiveMenuItem = (item: any) => {
+    layoutConfig.activeMenuItem = item.value || item;
+  };
+
+  const onMenuToggle = () => {
     if (layoutConfig.menuMode === "overlay") {
       layoutState.overlayMenuActive = !layoutState.overlayMenuActive;
     }
 
-    if (window.innerWidth >= 991) {
+    if (window.innerWidth > 991) {
       layoutState.staticMenuDesktopInactive =
         !layoutState.staticMenuDesktopInactive;
     } else {
@@ -33,13 +41,19 @@ export function useLayout() {
     }
   };
 
-  const isSideBarActive = computed(
+  const isSidebarActive = computed(
     () => layoutState.overlayMenuActive || layoutState.staticMenuMobileActive
   );
+
+  const isDarkTheme = computed(() => layoutConfig.darkTheme);
+
   return {
     layoutConfig: toRefs(layoutConfig),
     layoutState: toRefs(layoutState),
-    isSideBarActive,
-    onMenuToggled,
+    setScale,
+    onMenuToggle,
+    isSidebarActive,
+    isDarkTheme,
+    setActiveMenuItem,
   };
 }

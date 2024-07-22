@@ -9,6 +9,6 @@
     }
   ],
   "compilerOptions": {
-    "noImplicitAny": false
+    "noUnusedLocals": false
   }
 }

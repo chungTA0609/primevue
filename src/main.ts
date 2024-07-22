@@ -4,7 +4,7 @@ import "prismjs/themes/prism-coy.css";
 import "./assets/styles/layout.scss";
 import "./assets/demo/flags/flags.css";
 
-import { createApp, reactive } from "vue";
+import { createApp } from "vue";
 import router from "./router";
 import PrimeVue from "primevue/config";
 import AutoComplete from "primevue/autocomplete";
@@ -92,12 +92,18 @@ import TreeTable from "primevue/treetable";
 import App from "./App.vue";
 import Lara from "@primevue/themes/lara";
 import store from "./store";
+import '@/assets/styles.scss';
+
 router.beforeEach(function (to, from, next) {
+  console.log(to);
+  console.log(from);
+
   window.scrollTo(0, 0);
   next();
 });
 
 const app = createApp(App);
+app.config.warnHandler = () => null;
 app.use(ConfirmationService);
 app.use(ToastService);
 app.use(router);

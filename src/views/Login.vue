@@ -35,12 +35,7 @@
           "
         >
           <div class="text-center mb-5">
-            <img
-              src="../../layout/images/avatar.png"
-              alt="Image"
-              height="50"
-              class="mb-3"
-            />
+            <img src="" alt="Image" height="50" class="mb-3" />
             <div class="text-900 text-3xl font-medium mb-3">
               Welcome, Isabel!
             </div>

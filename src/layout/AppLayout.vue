@@ -23,50 +23,17 @@ import AppMenu from "../views/Menu.vue";
 import Footer from "../views/Footer.vue";
 import { useLayout } from "./composables/layout";
 
-const { layoutConfig, layoutState, isSideBarActive } = useLayout();
+const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
-const overlayMenuActive = ref(false);
-const mobileMenuActive = ref(false);
-const outSideClickListener = ref(null);
-watch(isSideBarActive, (newVal) => {
+const outsideClickListener = ref(null);
+
+watch(isSidebarActive, (newVal) => {
   if (newVal) {
-    bindOutClickListener();
+    bindOutsideClickListener();
   } else {
-    unBindOutClickListener();
+    unbindOutsideClickListener();
   }
 });
-
-const onMenuItemClick = (event: any) => {
-  if (event.item && !event.item.items) {
-    overlayMenuActive.value = false;
-    mobileMenuActive.value = false;
-  }
-};
-
-const bindOutClickListener = () => {
-  if (!outSideClickListener.value) {
-    outSideClickListener.value = (event: any) => {
-      if (isOutsideClicked(event)) {
-        layoutState.overlayMenuActive.value = false;
-        layoutState.staticMenuMobileActive.value = false;
-        layoutState.menuHoverActive.value = false;
-      }
-    };
-  }
-};
-const unBindOutClickListener = () => {};
-
-const isOutsideClicked = (event: any) => {
-  const sidebarEl = document.querySelector(".layout-sidebar");
-  const topbarEl = document.querySelector(".layout-menu-button");
-
-  return !(
-    sidebarEl?.isSameNode(event.target) ||
-    sidebarEl?.contains(event.target) ||
-    topbarEl?.isSameNode(event.target) ||
-    topbarEl?.contains(event.target)
-  );
-};
 
 const containerClass = computed(() => {
   return {
@@ -82,6 +49,37 @@ const containerClass = computed(() => {
     "p-ripple-disabled": layoutConfig.ripple.value === false,
   };
 });
+const bindOutsideClickListener = () => {
+  if (!outsideClickListener.value) {
+    outsideClickListener.value = (event: any) => {
+      if (isOutsideClicked(event)) {
+        layoutState.overlayMenuActive.value = false;
+        layoutState.staticMenuMobileActive.value = false;
+        layoutState.menuHoverActive.value = false;
+      }
+    };
+    document.addEventListener("click", outsideClickListener.value);
+  }
+};
+const unbindOutsideClickListener = () => {
+  if (outsideClickListener.value) {
+    document.removeEventListener("click", outsideClickListener.value);
+    outsideClickListener.value = null;
+  }
+};
+const isOutsideClicked = (event: any) => {
+  const sidebarEl = document.querySelector(".layout-sidebar");
+  const topbarEl = document.querySelector(".layout-menu-button");
+
+  return !(
+    sidebarEl?.isSameNode(event.target) ||
+    sidebarEl?.contains(event.target) ||
+    topbarEl?.isSameNode(event.target) ||
+    topbarEl?.contains(event.target)
+  );
+};
 </script>
 
-<style></style>
+<style scoped>
+/* Your styles here */
+</style>

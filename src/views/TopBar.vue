@@ -1,61 +1,14 @@
-<template>
-  <div class="layout-topbar">
-    <router-link to="/" class="layout-topbar-logo">
-      <img alt="Logo" src="/images/logo-dark.svg" />
-      <span>Prime Vue</span>
-    </router-link>
-    <button
-      class="p-link layout-menu-button layout-topbar-button"
-      @click="onMenuToggled()"
-    >
-      <i class="pi pi-bars"></i>
-    </button>
-    <button
-      class="p-link layout-topbar-menu-button layout-topbar-button"
-      @click="onTopBarMenuButton()"
-    >
-      <i class="pi pi-ellipsis-v"></i>
-    </button>
-    <ul
-      class="layout-topbar-menu hidden lg:flex origin-top"
-      :class="topbarMenuClasses"
-    >
-      <li>
-        <button
-          class="p-link layout-topbar-button"
-          @click="onTopBarMenuButton()"
-        >
-          <i class="pi pi-calendar"></i>
-          <span>Events</span>
-        </button>
-      </li>
-      <li>
-        <button class="p-link layout-topbar-button" @click="onSettingsClick()">
-          <i class="pi pi-cog"></i>
-          <span>Settings</span>
-        </button>
-      </li>
-      <li>
-        <button
-          class="p-link layout-topbar-button"
-          @click="onTopBarMenuButton()"
-        >
-          <i class="pi pi-user"></i>
-          <span>Profile</span>
-        </button>
-      </li>
-    </ul>
-  </div>
-</template>
-
 <script setup>
-import { computed, ref, onMounted, onBeforeUnmount } from "vue";
-import { useLayout } from "../layout/composables/layout";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { useLayout } from "@/layout/composables/layout";
 import { useRouter } from "vue-router";
-const { layoutConfig, onMenuToggled } = useLayout();
+
+const { layoutConfig, onMenuToggle } = useLayout();
+
+const outsideClickListener = ref(null);
+const topbarMenuActive = ref(false);
 const router = useRouter();
-const topBarMenuActive = ref(false);
-const outsideClickListener = ref(false);
+
 onMounted(() => {
   bindOutsideClickListener();
 });
@@ -64,18 +17,30 @@ onBeforeUnmount(() => {
   unbindOutsideClickListener();
 });
 
+const logoUrl = computed(() => {
+  return `/layout/images/${
+    layoutConfig.darkTheme.value ? "logo-white" : "logo-dark"
+  }.svg`;
+});
+
 const onTopBarMenuButton = () => {
-  topBarMenuActive.value = !topBarMenuActive.value;
+  topbarMenuActive.value = !topbarMenuActive.value;
 };
 const onSettingsClick = () => {
-  topBarMenuActive.value = false;
+  topbarMenuActive.value = false;
   router.push("/documentation");
 };
+const topbarMenuClasses = computed(() => {
+  return {
+    "layout-topbar-menu-mobile-active": topbarMenuActive.value,
+  };
+});
+
 const bindOutsideClickListener = () => {
   if (!outsideClickListener.value) {
     outsideClickListener.value = (event) => {
       if (isOutsideClicked(event)) {
-        topBarMenuActive.value = false;
+        topbarMenuActive.value = false;
       }
     };
     document.addEventListener("click", outsideClickListener.value);
@@ -88,7 +53,7 @@ const unbindOutsideClickListener = () => {
   }
 };
 const isOutsideClicked = (event) => {
-  if (!topBarMenuActive.value) return;
+  if (!topbarMenuActive.value) return;
 
   const sidebarEl = document.querySelector(".layout-topbar-menu");
   const topbarEl = document.querySelector(".layout-topbar-menu-button");
@@ -100,10 +65,44 @@ const isOutsideClicked = (event) => {
     topbarEl.contains(event.target)
   );
 };
-
-const topbarMenuClasses = computed(() => {
-  return { "layout-topbar-menu-mobile-active": topBarMenuActive.value };
-});
 </script>
 
-<style></style>
+<template>
+  <div class="layout-topbar">
+    <router-link to="/" class="layout-topbar-logo">
+      <img :src="logoUrl" alt="logo" />
+      <span>SAKAI</span>
+    </router-link>
+
+    <button
+      class="p-link layout-menu-button layout-topbar-button"
+      @click="onMenuToggle()"
+    >
+      <i class="pi pi-bars"></i>
+    </button>
+
+    <button
+      class="p-link layout-topbar-menu-button layout-topbar-button"
+      @click="onTopBarMenuButton()"
+    >
+      <i class="pi pi-ellipsis-v"></i>
+    </button>
+
+    <div class="layout-topbar-menu" :class="topbarMenuClasses">
+      <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
+        <i class="pi pi-calendar"></i>
+        <span>Calendar</span>
+      </button>
+      <button @click="onTopBarMenuButton()" class="p-link layout-topbar-button">
+        <i class="pi pi-user"></i>
+        <span>Profile</span>
+      </button>
+      <button @click="onSettingsClick()" class="p-link layout-topbar-button">
+        <i class="pi pi-cog"></i>
+        <span>Settings</span>
+      </button>
+    </div>
+  </div>
+</template>
+
+<style lang="scss" scoped></style>

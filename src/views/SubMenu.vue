@@ -1,118 +1,143 @@
-<template>
-  <ul v-if="props.model">
-    <template v-for="(item, i) of props.model" :key="i">
-      <li
-        v-if="visible(item) && !item.sperator"
-        :key="item.label || i"
-        :class="[
-          {
-            'layout-menuitem-category': root,
-            'active-menuitem': activeIndex === i && !item.to && !item.disabled,
-          },
-        ]"
-      >
-        <template v-if="root">
-          <div class="layout-menuitem-root-text" :aria-label="item.label">
-            {{ item.label }}
-          </div>
-          <SubMenu
-            :model="visible(item) && item.items"
-            @menuitem-click="emit('menuitem-click', $event)"
-          ></SubMenu>
-        </template>
-        <template v-else>
-          <router-link
-            v-if="item.to"
-            :to="item.to"
-            :class="[item.class, 'p-ripple', { 'p-disabled': item.disabled }]"
-            :style="item.style"
-            @click="onMenuItemClick($event, item, i)"
-            :target="item.target"
-            :aria-label="item.label"
-            exact
-            role="menuitem"
-            v-ripple
-          >
-            <i :class="item.icon"></i>
-            <span>{{ item.label }}</span>
-            <i
-              v-if="item.items"
-              class="pi pi-fw pi-angle-down menuitem-toggle-icon"
-            ></i>
-            <Badge v-if="item.badge" :value="item.badge"></Badge>
-          </router-link>
-          <a
-            v-if="!item.to"
-            :href="item.url || '#'"
-            :style="item.style"
-            :class="[item.class, 'p-ripple', { 'p-disabled': item.disabled }]"
-            @click="onMenuItemClick($event, item, i)"
-            :target="item.target"
-            :aria-label="item.label"
-            role="menuitem"
-            v-ripple
-          >
-            <i :class="item.icon"></i>
-            <span>{{ item.label }}</span>
-            <i
-              v-if="item.items"
-              class="pi pi-fw pi-angle-down menuitem-toggle-icon"
-            ></i>
-            <Badge v-if="item.badge" :value="item.badge"></Badge>
-          </a>
-          <transition name="layout-submenu-wrapper">
-            <SubMenu
-              v-show="activeIndex === i"
-              :model="visible(item) && item.items"
-              @menuitem-click="emit('menuitem-click', $event)"
-            ></SubMenu>
-          </transition>
-        </template>
-      </li>
-      <li
-        class="p-menu-separator"
-        :style="item.style"
-        v-if="visible(item) && item.separator"
-        :key="'separator' + i"
-        role="separator"
-      ></li>
-    </template>
-  </ul>
-</template>
-
 <script setup>
-import { ref } from "vue";
+import { ref, onBeforeMount, watch } from "vue";
+import { useRoute } from "vue-router";
+import { useLayout } from "@/layout/composables/layout";
 
-const props = defineProps(["model", "root"]);
-const emit = defineEmits(["menuitem-click"]);
-const activeIndex = ref(null);
-const visible = (item) => {
-  return typeof item.visible === "function"
-    ? item.visible()
-    : item.visible !== false;
-};
-const onMenuItemClick = (event, item, index) => {
+const route = useRoute();
+
+const { layoutConfig, layoutState, setActiveMenuItem, onMenuToggle } =
+  useLayout();
+
+const props = defineProps({
+  item: {
+    type: Object,
+    default: () => ({}),
+  },
+  index: {
+    type: Number,
+    default: 0,
+  },
+  root: {
+    type: Boolean,
+    default: true,
+  },
+  parentItemKey: {
+    type: String,
+    default: null,
+  },
+});
+
+const isActiveMenu = ref(false);
+const itemKey = ref(null);
+
+onBeforeMount(() => {
+  itemKey.value = props.parentItemKey
+    ? props.parentItemKey + "-" + props.index
+    : String(props.index);
+
+  const activeItem = layoutState.activeMenuItem;
+
+  isActiveMenu.value =
+    activeItem === itemKey.value || activeItem
+      ? activeItem.startsWith(itemKey.value + "-")
+      : false;
+});
+
+watch(
+  () => layoutConfig.activeMenuItem.value,
+  (newVal) => {
+    isActiveMenu.value =
+      newVal === itemKey.value || newVal.startsWith(itemKey.value + "-");
+  }
+);
+const itemClick = (event, item) => {
   if (item.disabled) {
     event.preventDefault();
     return;
   }
 
-  if (!item.to && !item.url) {
-    event.preventDefault();
+  const { overlayMenuActive, staticMenuMobileActive } = layoutState;
+
+  if (
+    (item.to || item.url) &&
+    (staticMenuMobileActive.value || overlayMenuActive.value)
+  ) {
+    onMenuToggle();
   }
 
-  //execute command
   if (item.command) {
     item.command({ originalEvent: event, item: item });
   }
 
-  activeIndex.value = index === activeIndex.value ? null : index;
+  const foundItemKey = item.items
+    ? isActiveMenu.value
+      ? props.parentItemKey
+      : itemKey
+    : itemKey.value;
 
-  emit("menuitem-click", {
-    originalEvent: event,
-    item: item,
-  });
+  setActiveMenuItem(foundItemKey);
+};
+
+const checkActiveRoute = (item) => {
+  return route.path === item.to;
 };
 </script>
 
-<style></style>
+<template>
+  <li
+    :class="{ 'layout-root-menuitem': root, 'active-menuitem': isActiveMenu }"
+  >
+    <div
+      v-if="root && item.visible !== false"
+      class="layout-menuitem-root-text"
+    >
+      {{ item.label }}
+    </div>
+    <a
+      v-if="(!item.to || item.items) && item.visible !== false"
+      :href="item.url"
+      @click="itemClick($event, item, index)"
+      :class="item.class"
+      :target="item.target"
+      tabindex="0"
+    >
+      <i :class="item.icon" class="layout-menuitem-icon"></i>
+      <span class="layout-menuitem-text">{{ item.label }}</span>
+      <i
+        class="pi pi-fw pi-angle-down layout-submenu-toggler"
+        v-if="item.items"
+      ></i>
+    </a>
+    <router-link
+      v-if="item.to && !item.items && item.visible !== false"
+      @click="itemClick($event, item, index)"
+      :class="[item.class, { 'active-route': checkActiveRoute(item) }]"
+      tabindex="0"
+      :to="item.to"
+    >
+      <i :class="item.icon" class="layout-menuitem-icon"></i>
+      <span class="layout-menuitem-text">{{ item.label }}</span>
+      <i
+        class="pi pi-fw pi-angle-down layout-submenu-toggler"
+        v-if="item.items"
+      ></i>
+    </router-link>
+    <Transition
+      v-if="item.items && item.visible !== false"
+      name="layout-submenu"
+    >
+      <ul v-show="root ? true : isActiveMenu" class="layout-submenu">
+        <sub-menu
+          v-for="(child, i) in item.items"
+          :key="child"
+          :index="i"
+          :item="child"
+          :parentItemKey="itemKey"
+          :root="false"
+        ></sub-menu>
+      </ul>
+    </Transition>
+  </li>
+</template>
+
+<style lang="scss" scoped></style>

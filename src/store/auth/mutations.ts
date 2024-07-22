@@ -1,9 +1,10 @@
 import { MutationTree } from "vuex";
 import AuthState from "../../models/AuthState";
-import User from "../../models/User";
+// import User from "../../models/User";
+import AuthResponse from "../../models/AuthResponse";
 
 export const mutations: MutationTree<AuthState> = {
-  loginSuccess(state, user: User) {
+  loginSuccess(state, user: AuthResponse) {
     state.status.loggedIn = true;
     state.user = user;
   },
