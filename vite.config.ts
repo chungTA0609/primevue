@@ -4,7 +4,7 @@ import { fileURLToPath, URL } from "node:url";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base:'/primevvue/',
+  base: '/primevvue/',
   plugins: [vue()],
   resolve: {
     alias: {
