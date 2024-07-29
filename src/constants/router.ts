@@ -2,7 +2,7 @@ import { RouteRecordRaw } from "vue-router";
 // import Home from "../components/Home.vue";
 import Login from "../views/Login.vue";
 import AppLayout from "../layout/AppLayout.vue";
-import Excersises from "../views/Excersises.vue";
+// import Excersises from "../views/Excersises.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
