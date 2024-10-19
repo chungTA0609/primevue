@@ -1,47 +1,101 @@
 <script setup>
-import { onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, reactive, ref, watch } from 'vue';
 import { ProductService } from '@/service/ProductService';
 import { useLayout } from '@/layout/composables/layout';
 import CarInfoComp from '../components/CarInfoComp.vue';
-
+import axiosInstance from '../service/axiosInstance';
 const { isDarkTheme } = useLayout();
 
 const products = ref(null);
-const lineData = reactive({
-    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-    datasets: [
-        {
-            label: 'First Dataset',
-            data: [65, 59, 80, 81, 56, 55, 40],
-            fill: false,
-            backgroundColor: '#2f4860',
-            borderColor: '#2f4860',
-            tension: 0.4
-        },
-        {
-            label: 'Second Dataset',
-            data: [28, 48, 40, 19, 86, 27, 90],
-            fill: false,
-            backgroundColor: '#00bb7e',
-            borderColor: '#00bb7e',
-            tension: 0.4
-        }
-    ]
-});
-const items = ref([
-    { label: 'Add New', icon: 'pi pi-fw pi-plus' },
-    { label: 'Remove', icon: 'pi pi-fw pi-minus' }
+const listButton = ref([
+    'Audi',
+    'Bently',
+    'BMW',
+    'Chevrolet',
+    'Daewoo',
+    'Ford',
+    'Honda',
+    'Huyndai',
+    'Isuzu',
+    'Jeep',
+    'KIA',
+    'LandRover',
+    'Lexus',
+    'Mazda',
+    'Mercedes Benz',
+    'MG',
+    'Mini',
+    'Mitsubishi',
+    'Nissan',
+    'Peugeot',
+    'Porsche',
+    'Subaru',
+    'Suzuki',
+    'Toyota',
+    'Vinfast',
+    'Volkswagen',
+    'Volvo',
+    'Tất cả các hãng'
 ]);
 const lineOptions = ref(null);
 const productService = new ProductService();
+const branchSearch = ref('');
+const queryParams = {
+    brandId: branchSearch,
+    styleId: 10,
+    originId: 10,
+    fuelId: 10,
+    outsideColorId: 10,
+    insideColorId: 10,
+    cityId: 10,
+    districtId: 10,
+    wardId: 10,
+    page: 1,
+    pageSize: 100,
+    minPrice: 10,
+    maxPrice: 0,
+    sortItems: [
+        {
+            field: 'styleId',
+            desc: true
+        }
+    ]
+};
+const setBranch = (branch) => {
+    console.log(branch);
 
+    branchSearch.value = branch;
+    console.log(branchSearch.value);
+    queryCar();
+};
+const queryCar = () => {
+    axiosInstance.post('/cars/query', {
+        // ...queryParams,
+        brandId: branchSearch.value,
+        page: 1,
+        pageSize: 100,
+        sortItems: [
+            {
+                field: 'brandId',
+                desc: true
+            }
+        ]
+    });
+};
 onMounted(() => {
     productService.getProductsSmall().then((data) => (products.value = data));
+    axiosInstance.post('/cars/query', {
+        page: 1,
+        pageSize: 100,
+        sortItems: [
+            {
+                field: 'styleId',
+                desc: true
+            }
+        ]
+    });
 });
 
-const formatCurrency = (value) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-};
 const applyLightTheme = () => {
     lineOptions.value = {
         plugins: {
@@ -139,34 +193,7 @@ watch(
                 </div>
             </TabPanel>
             <TabPanel header="Tìm theo hãng xe">
-                <Button label="Audi" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Bently" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="BMW" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Chevrolet" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Daewoo" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Ford" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Honda" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Huyndai" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Isuzu" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Jeep" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="KIA" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="LandRover" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Lexus" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Mazda" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Mercedes Benz" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="MG" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Mini" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Mitsubishi" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Nissan" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Peugeot" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Porsche" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Subaru" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Suzuki" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Toyota" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Vinfast" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Volkswagen" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Volvo" severity="contrast" outlined class="mb-2 mr-2" />
-                <Button label="Tất cả các hãng" severity="contrast" outlined class="mb-2 mr-2" />
+                <Button v-for="(button, i) in listButton" :key="i" @click="setBranch(button)" :label="button" severity="contrast" :outlined="branchSearch !== button" class="mb-2 mr-2" />
             </TabPanel>
         </TabView>
     </div>
