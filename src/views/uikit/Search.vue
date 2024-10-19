@@ -1,6 +1,6 @@
 <script setup>
-import { ref } from 'vue';
-
+import { computed, onMounted, ref } from 'vue';
+import axiosInstance from '../../service/axiosInstance';
 const dropdownItems = ref([
     { name: 'Tất cả', code: 'all' },
     { name: 'Xe mới', code: 'new' },
@@ -17,12 +17,12 @@ const provinces = ref([
     { name: 'TP. Hồ Chí Minh', code: 'HCM' }
 ]);
 
-const dropdownItem = ref('all');
-const gearItem = ref('all');
-const province = ref(null);
-const selectedNode = ref(null);
-const firstPrice = ref(null);
-const lastPrice = ref(null);
+const dropdownItem = ref(0);
+const gearItem = ref(0);
+const province = ref(0);
+const selectedNode = ref(0);
+const firstPrice = ref(0);
+const lastPrice = ref(0);
 
 const treeSelectNodes = ref([
     {
@@ -78,6 +78,34 @@ const treeSelectNodes = ref([
         ]
     }
 ]);
+
+const queryCar = () => {
+    axiosInstance.post('/cars/query', {
+        // ...queryParams,
+        brandId: selectedNode.value,
+        originId: dropdownItem.value,
+        cityId: province.value,
+        styleId: gearItem.value,
+        fuelId: selectedNode.value,
+        minPrice: firstPrice.value,
+        maxPrice: lastPrice.value,
+        page: 1,
+        pageSize: 100,
+        sortItems: [
+            {
+                field: 'brandId',
+                desc: true
+            }
+        ]
+    });
+};
+const paramChange = computed(() => {
+    queryCar();
+    return !dropdownItem.value || gearItem.value || province.value || selectedNode.value || firstPrice.value || lastPrice.value;
+});
+onMounted(() => {
+    queryCar();
+});
 </script>
 
 <template>
@@ -106,7 +134,7 @@ const treeSelectNodes = ref([
                         <label for="price">Khoảng giá</label>
                         <div class="price-display">
                             <InputNumber class="price" v-model="firstPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
-                            <p>-</p>
+                            <p v-if="paramChange">-</p>
                             <InputNumber class="price" v-model="lastPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
                         </div>
                     </div>

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { ProductService } from '@/service/ProductService';
 import { useLayout } from '@/layout/composables/layout';
 import CarInfoComp from '../components/CarInfoComp.vue';
@@ -40,27 +40,6 @@ const listButton = ref([
 const lineOptions = ref(null);
 const productService = new ProductService();
 const branchSearch = ref('');
-const queryParams = {
-    brandId: branchSearch,
-    styleId: 10,
-    originId: 10,
-    fuelId: 10,
-    outsideColorId: 10,
-    insideColorId: 10,
-    cityId: 10,
-    districtId: 10,
-    wardId: 10,
-    page: 1,
-    pageSize: 100,
-    minPrice: 10,
-    maxPrice: 0,
-    sortItems: [
-        {
-            field: 'styleId',
-            desc: true
-        }
-    ]
-};
 const setBranch = (branch) => {
     console.log(branch);
 

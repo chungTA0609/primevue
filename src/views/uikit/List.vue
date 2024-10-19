@@ -1,7 +1,7 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { ProductService } from '@/service/ProductService';
-
+import axiosInstance from '../../service/axiosInstance';
 const dropdownItems = ref([
     { name: 'Tất cả', code: 'all' },
     { name: 'Xe mới', code: 'new' },
@@ -24,7 +24,28 @@ const sortField = ref(null);
 
 const productService = new ProductService();
 
+const querySalon = () => {
+    axiosInstance.post('/cars/query', {
+        // ...queryParams,
+        brandId: dropdownItem.value,
+        cityId: province.value,
+        page: 1,
+        pageSize: 100,
+        sortItems: [
+            {
+                field: 'brandId',
+                desc: true
+            }
+        ]
+    });
+};
+
+const changeParam = computed(() => {
+    querySalon();
+    return province.value !== 'aaaaaaaaaa' && dropdownItem.value;
+});
 onMounted(() => {
+    querySalon();
     productService.getProductsSmall().then((data) => (dataviewValue.value = data));
 });
 </script>
@@ -54,7 +75,7 @@ onMounted(() => {
                                         <div class="flex flex-row justify-content-between align-items-start gap-2">
                                             <div>
                                                 <span class="text-lg font-medium text-900">{{ item.category }}</span>
-                                                <div class="font-medium text-secondary text-sm mt-1">{{ item.name }}</div>
+                                                <div v-if="!changeParam" class="font-medium text-secondary text-sm mt-1">{{ item.name }}</div>
                                                 <div class="text-lg font-medium text-800 mt-3">{{ item.description }}</div>
                                             </div>
                                         </div>
