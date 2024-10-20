@@ -169,7 +169,6 @@ watch(pagination, (val) => {
                 <div class="col-12 car-comp">
                     <CarInfoComp></CarInfoComp>
                 </div>
-                <Paginator :rows="10" :totalRecords="120" :rowsPerPageOptions="[10, 20, 30]"></Paginator>
             </div>
         </div>
     </div>
