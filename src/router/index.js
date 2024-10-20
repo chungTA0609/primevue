@@ -30,8 +30,28 @@ const router = createRouter({
                 },
                 {
                     path: '/phu-tung',
-                    name: 'phu-tung',
+                    name: 'detail',
                     component: () => import('@/views/uikit/InvalidState.vue')
+                },
+                {
+                    path: '/detail/1',
+                    name: 'phu-tung',
+                    component: () => import('@/views/uikit/Detail.vue')
+                },
+                {
+                    path: '/admin',
+                    name: 'admin',
+                    component: () => import('@/views/uikit/Admin.vue')
+                },
+                {
+                    path: '/seller/1',
+                    name: 'seller',
+                    component: () => import('@/views/uikit/SellerDetail.vue')
+                },
+                {
+                    path: '/buyer/1',
+                    name: 'buyer',
+                    component: () => import('@/views/uikit/BuyerDetail.vue')
                 },
                 {
                     path: '/uikit/button',

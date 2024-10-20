@@ -1,10 +1,17 @@
 <script setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
 const props = defineProps({
     title: {
         type: String,
         defaul: null
     }
 });
+const gotoDetail = () => {
+    router.push('/detail/1');
+};
 </script>
 <template>
     <div class="col-12" style="padding: 0">
@@ -17,7 +24,7 @@ const props = defineProps({
                 </div>
             </div>
             <div class="col-7">
-                <div class="des-title"><p>Xe Ford Focus S 2.0 AT 2013</p></div>
+                <div class="des-title" @click="gotoDetail"><p>Xe Ford Focus S 2.0 AT 2013</p></div>
                 <div class="description">
                     <p class="first-des">*Xe lắp ráp trong nước, màu đen, máy xăng 2.0 L, số tự động, 7 chỗ , đã đi 74,000 km ...</p>
                     <p class="second-des">Em bán Outlander bản 2.0 CVT Sản xuất 2022 Odo lăn bánh 74.000km Bảo dưỡng Full lịch sử Hãng Cam kết xe không tai nạn ảnh hưởng vận hành xe, không ngập nước, thuỷ ...</p>

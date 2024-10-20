@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, reactive, watch } from 'vue';
 import { ProductService } from '@/service/ProductService';
 import axiosInstance from '../../service/axiosInstance';
 const dropdownItems = ref([
@@ -13,9 +13,9 @@ const provinces = ref([
     { name: 'Hà Nội', code: 'HNI' },
     { name: 'TP. Hồ Chí Minh', code: 'HCM' }
 ]);
-const province = ref(null);
+const province = ref(1);
 
-const dropdownItem = ref('all');
+const dropdownItem = ref(0);
 
 const dataviewValue = ref(null);
 const layout = ref('grid');
@@ -23,21 +23,23 @@ const sortOrder = ref(null);
 const sortField = ref(null);
 
 const productService = new ProductService();
+const queryParams = reactive({
+    brandId: dropdownItem.value,
+    cityId: province.value,
+    page: 1,
+    pageSize: 100,
+    sortItems: [
+        {
+            field: 'brandId',
+            desc: true
+        }
+    ]
+});
+const pagination = ref(1);
 
-const querySalon = () => {
-    axiosInstance.post('/cars/query', {
-        // ...queryParams,
-        brandId: dropdownItem.value,
-        cityId: province.value,
-        page: 1,
-        pageSize: 100,
-        sortItems: [
-            {
-                field: 'brandId',
-                desc: true
-            }
-        ]
-    });
+const querySalon = async () => {
+    const res = await axiosInstance.post('/cars/query', { ...queryParams });
+    console.log(res);
 };
 
 const changeParam = computed(() => {
@@ -47,6 +49,12 @@ const changeParam = computed(() => {
 onMounted(() => {
     querySalon();
     productService.getProductsSmall().then((data) => (dataviewValue.value = data));
+});
+
+watch(pagination, (val) => {
+    queryParams.page = val / 10 + 1;
+
+    querySalon();
 });
 </script>
 
@@ -61,7 +69,7 @@ onMounted(() => {
                 <Dropdown id="province" v-model="province" :options="provinces" optionLabel="name" placeholder="Chọn tỉnh thành"></Dropdown>
 
                 <hr />
-                <DataView :value="dataviewValue" :layout="layout" :paginator="true" :rows="9" :sortOrder="sortOrder" :sortField="sortField">
+                <DataView :value="dataviewValue" :layout="layout" :rows="9" :sortOrder="sortOrder" :sortField="sortField">
                     <template #grid="slotProps">
                         <div class="grid grid-nogutter">
                             <div v-for="(item, index) in slotProps.items" :key="index" class="col-12 sm:col-6 md:col-3 p-2">
@@ -85,6 +93,7 @@ onMounted(() => {
                         </div>
                     </template>
                 </DataView>
+                <Paginator v-model:first="pagination" :rows="10" :totalRecords="120"></Paginator>
             </div>
         </div>
     </div>

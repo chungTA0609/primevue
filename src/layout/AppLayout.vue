@@ -49,6 +49,11 @@ const logoUrl = computed(() => {
                                 <span>Phụ tùng</span>
                             </a>
                         </li>
+                        <li>
+                            <a @click="smoothScroll('/admin')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
+                                <span>Admin</span>
+                            </a>
+                        </li>
                     </ul>
                     <div class="flex justify-content-between lg:block border-top-1 lg:border-top-none surface-border py-3 lg:py-0 mt-3 lg:mt-0">
                         <Button @click="router.push('/auth/login')" label="Login" class="p-button-text p-button-rounded border-none font-light line-height-2 text-blue-500"></Button>

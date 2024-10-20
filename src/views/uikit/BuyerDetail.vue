@@ -1,6 +1,12 @@
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import axiosInstance from '../../service/axiosInstance';
+
+import { useToast } from 'primevue/usetoast';
+import { useConfirm } from 'primevue/useconfirm';
+const confirmPopup = useConfirm();
+const toast = useToast();
+
 const dropdownItems = ref([
     { name: 'Tất cả', code: 'all' },
     { name: 'Xe mới', code: 'new' },
@@ -23,25 +29,7 @@ const province = ref(0);
 const selectedNode = ref(0);
 const firstPrice = ref(0);
 const lastPrice = ref(0);
-const pagination = ref(1);
-const queryParams = reactive({
-    // ...queryParams,
-    brandId: selectedNode.value,
-    originId: dropdownItem.value,
-    cityId: province.value,
-    styleId: gearItem.value,
-    fuelId: selectedNode.value,
-    minPrice: firstPrice.value,
-    maxPrice: lastPrice.value,
-    page: 1,
-    pageSize: 100,
-    sortItems: [
-        {
-            field: 'brandId',
-            desc: true
-        }
-    ]
-});
+
 const treeSelectNodes = ref([
     {
         key: '0',
@@ -97,11 +85,25 @@ const treeSelectNodes = ref([
     }
 ]);
 
-const queryCar = async () => {
-    const res = await axiosInstance.post('/cars/query', {
-        ...queryParams
+const queryCar = () => {
+    axiosInstance.post('/cars/query', {
+        // ...queryParams,
+        brandId: selectedNode.value,
+        originId: dropdownItem.value,
+        cityId: province.value,
+        styleId: gearItem.value,
+        fuelId: selectedNode.value,
+        minPrice: firstPrice.value,
+        maxPrice: lastPrice.value,
+        page: 1,
+        pageSize: 100,
+        sortItems: [
+            {
+                field: 'brandId',
+                desc: true
+            }
+        ]
     });
-    console.log('res', res);
 };
 const paramChange = computed(() => {
     queryCar();
@@ -110,45 +112,66 @@ const paramChange = computed(() => {
 onMounted(() => {
     queryCar();
 });
-watch(pagination, (val) => {
-    console.log(val);
 
-    console.log(queryParams);
-    queryParams.page = val / 10 + 1;
-
-    queryCar();
-});
+const confirm = (event) => {
+    confirmPopup.require({
+        target: event.target,
+        message: 'Are you sure you want to proceed?',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+            toast.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
+        },
+        reject: () => {
+            toast.add({ severity: 'info', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+        }
+    });
+};
 </script>
 
 <template>
     <div class="grid">
         <div class="col-12 md:col-12">
             <div class="card p-fluid">
-                <h5>Tìm kiếm</h5>
-                <div class="p-fluid formgrid grid">
-                    <div class="field col-12 md:col-4">
-                        <label for="name1">Hãng xe</label>
-                        <TreeSelect v-model="selectedNode" :options="treeSelectNodes" placeholder="Chọn hãng xe"></TreeSelect>
-                    </div>
-                    <div class="field col-12 md:col-4">
-                        <label for="state">Tình trạng xe</label>
-                        <Dropdown id="state" v-model="dropdownItem" :options="dropdownItems" optionLabel="name" placeholder="Chọn tình trạng xe"></Dropdown>
-                    </div>
-                    <div class="field col-12 md:col-4">
-                        <label for="province">Tỉnh thành</label>
-                        <Dropdown id="province" v-model="province" :options="provinces" optionLabel="name" placeholder="Chọn tỉnh thành"></Dropdown>
-                    </div>
-                    <div class="field col-12 md:col-6">
-                        <label for="gear">Hộp số</label>
-                        <Dropdown id="gear" v-model="gearItem" :options="gearItems" optionLabel="name" placeholder="Chọn loại hộp số"></Dropdown>
-                    </div>
-                    <div class="field col-12 md:col-6">
-                        <label for="price">Khoảng giá</label>
-                        <div class="price-display">
-                            <InputNumber class="price" v-model="firstPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
-                            <p v-if="paramChange">-</p>
-                            <InputNumber class="price" v-model="lastPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
+                <div class="header-contain">
+                    <h5>Thông tin người dùng</h5>
+                    <div style="width: 280px; display: flex">
+                        <h5 style="margin-right: 12px; margin-top: 5px">Đặt tài khoản thành VIP</h5>
+                        <div class="btn-pop">
+                            <ConfirmPopup
+                                ><template #message="slotProps">
+                                    <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0">
+                                        <p>Đặt thành viên này thành VIP</p>
+                                    </div>
+                                </template></ConfirmPopup
+                            >
+                            <Button ref="popup" @click="confirm($event)" label="VIP" class="mr-2"></Button>
                         </div>
+                    </div>
+                </div>
+                <div class="p-fluid formgrid grid">
+                    <div class="field col-12 md:col-4" style="display: flex">
+                        <p class="mr-1" style="font-size: 1000">Tên:</p>
+                        <p><b>Nguyễn Minh Phường </b></p>
+                    </div>
+                    <div class="field col-12 md:col-4 flex">
+                        <p class="mr-1" style="font-size: 1000">Số điện thoại:</p>
+                        <p><b>0123456789</b></p>
+                    </div>
+                    <div class="field col-12 md:col-4 flex">
+                        <p class="mr-1" style="font-size: 1000">Địa chỉ:</p>
+                        <p><b>Thanh Xuyên, Hoàng Long, Phú Xuyên, Hà Nội</b></p>
+                    </div>
+                    <div class="field col-12 md:col-4 flex">
+                        <p class="mr-1" style="font-size: 1000">Membership:</p>
+                        <p><b>Không</b></p>
+                    </div>
+                    <div class="field col-12 md:col-4 flex">
+                        <p class="mr-1" style="font-size: 1000">Email:</p>
+                        <p><b>Chung@gmail.com</b></p>
+                    </div>
+                    <div class="field col-12 md:col-4 flex">
+                        <p class="mr-1" style="font-size: 1000">Khu vực:</p>
+                        <p><b>Hà Nội</b></p>
                     </div>
                 </div>
             </div>
@@ -156,7 +179,12 @@ watch(pagination, (val) => {
 
         <div class="col-12">
             <div class="card">
-                <Paginator v-model:first="pagination" :rows="10" :totalRecords="120"></Paginator>
+                <div class="flex" style="justify-content: space-between">
+                    <h5>Danh sách xe đang bán</h5>
+                    <div class="right-part" style="float: right"><h9>Tổng: 12345</h9></div>
+                </div>
+                <hr />
+                <Paginator :rows="10" :totalRecords="120" :rowsPerPageOptions="[10, 20, 30]"></Paginator>
                 <div class="col-12 car-comp">
                     <CarInfoComp></CarInfoComp>
                 </div>
@@ -181,5 +209,9 @@ watch(pagination, (val) => {
 }
 .price {
     width: 350px;
+}
+.header-contain {
+    display: flex;
+    justify-content: space-between;
 }
 </style>
