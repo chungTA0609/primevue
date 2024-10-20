@@ -21,21 +21,31 @@ const router = createRouter({
                 {
                     path: '/ban-xe',
                     name: 'ban-xe',
+                    component: () => import('@/views/uikit/Banxe.vue')
+                },
+                {
+                    path: '/ban-xe/dang-tin',
+                    name: 'dang-tin',
                     component: () => import('@/views/uikit/Input.vue')
                 },
                 {
                     path: '/salon-xe',
                     name: 'salon-xe',
-                    component: () => import('@/views/uikit/List.vue')
+                    component: () => import('@/views/uikit/Salon.vue')
+                },
+                {
+                    path: '/salon/:id',
+                    name: 'salon-detail',
+                    component: () => import('@/views/uikit/SalonDetail.vue')
                 },
                 {
                     path: '/phu-tung',
-                    name: 'detail',
-                    component: () => import('@/views/uikit/InvalidState.vue')
+                    name: 'phu-tung',
+                    component: () => import('@/views/uikit/PhuTung.vue')
                 },
                 {
-                    path: '/detail/1',
-                    name: 'phu-tung',
+                    path: '/detail/:id',
+                    name: 'detail',
                     component: () => import('@/views/uikit/Detail.vue')
                 },
                 {
@@ -44,12 +54,12 @@ const router = createRouter({
                     component: () => import('@/views/uikit/Admin.vue')
                 },
                 {
-                    path: '/seller/1',
+                    path: '/seller/:id',
                     name: 'seller',
                     component: () => import('@/views/uikit/SellerDetail.vue')
                 },
                 {
-                    path: '/buyer/1',
+                    path: '/buyer/:id',
                     name: 'buyer',
                     component: () => import('@/views/uikit/BuyerDetail.vue')
                 },

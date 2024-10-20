@@ -62,7 +62,7 @@ const logoUrl = computed(() => {
                 </div>
             </div>
 
-            <div id="highlights" class="py-4 px-4 lg:px-8 mx-0 my-6 lg:mx-8">
+            <div id="highlights" class="py-4 px-4 lg:px-8 mx-0 lg:mx-8">
                 <router-view></router-view>
             </div>
         </div>

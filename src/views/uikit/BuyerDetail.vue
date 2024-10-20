@@ -180,24 +180,101 @@ const confirm = (event) => {
         <div class="col-12">
             <div class="card">
                 <div class="flex" style="justify-content: space-between">
-                    <h5>Danh sách xe đang bán</h5>
+                    <h5>Danh sách tin mua xe</h5>
                     <div class="right-part" style="float: right"><h9>Tổng: 12345</h9></div>
                 </div>
                 <hr />
-                <Paginator :rows="10" :totalRecords="120" :rowsPerPageOptions="[10, 20, 30]"></Paginator>
+                <Paginator :rows="10" :totalRecords="120"></Paginator>
                 <div class="col-12 car-comp">
-                    <CarInfoComp></CarInfoComp>
+                    <div class="card">
+                        <div class="title-contain flex" style="font-size: 20px">
+                            <p class="mr-1">Tiêu đề:</p>
+                            <p><b>Tìm mua xe kéo</b></p>
+                        </div>
+                        <div class="content-contain" style="font-size: 20px">
+                            <h5 class="mr-1">Nội dung:</h5>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-12 car-comp">
-                    <CarInfoComp></CarInfoComp>
+                    <div class="card">
+                        <div class="title-contain flex" style="font-size: 20px">
+                            <p class="mr-1">Tiêu đề:</p>
+                            <p><b>Tìm mua xe kéo</b></p>
+                        </div>
+                        <div class="content-contain" style="font-size: 20px">
+                            <h5 class="mr-1">Nội dung:</h5>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-12 car-comp">
-                    <CarInfoComp></CarInfoComp>
+                    <div class="card">
+                        <div class="title-contain flex" style="font-size: 20px">
+                            <p class="mr-1">Tiêu đề:</p>
+                            <p><b>Tìm mua xe kéo</b></p>
+                        </div>
+                        <div class="content-contain" style="font-size: 20px">
+                            <h5 class="mr-1">Nội dung:</h5>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-12 car-comp">
-                    <CarInfoComp></CarInfoComp>
+                    <div class="card">
+                        <div class="title-contain flex" style="font-size: 20px">
+                            <p class="mr-1">Tiêu đề:</p>
+                            <p><b>Tìm mua xe kéo</b></p>
+                        </div>
+                        <div class="content-contain" style="font-size: 20px">
+                            <h5 class="mr-1">Nội dung:</h5>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                        </div>
+                    </div>
                 </div>
-                <Paginator :rows="10" :totalRecords="120" :rowsPerPageOptions="[10, 20, 30]"></Paginator>
+                <div class="col-12 car-comp">
+                    <div class="card">
+                        <div class="title-contain flex" style="font-size: 20px">
+                            <p class="mr-1">Tiêu đề:</p>
+                            <p><b>Tìm mua xe kéo</b></p>
+                        </div>
+                        <div class="content-contain" style="font-size: 20px">
+                            <h5 class="mr-1">Nội dung:</h5>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                            <p><b>- Tìm mua xe kéo</b></p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -13,7 +13,6 @@ const dropdownValues = ref([
     { name: 'Istanbul', code: 'IST' },
     { name: 'Paris', code: 'PRS' }
 ]);
-const dropdownValue = ref(null);
 const images = ref([]);
 const treeSelectNodes = ref(null);
 const countryService = new CountryService();
@@ -51,7 +50,7 @@ onMounted(() => {
                 <h5>Xe Ford Focus S 2.0 AT 2013</h5>
                 <div class="grid p-fluid">
                     <div class="col-12 md:col-8">
-                        <div class="card mt-4">
+                        <div class="card mt-4" style="height: 470px">
                             <h5>Thông số kĩ thuật của xe</h5>
                             <div style="display: flex">
                                 <div class="col-12 md:col-6">
@@ -166,11 +165,11 @@ onMounted(() => {
                         </div>
                         <div class="card" style="max-height: 270px">
                             <h5>Từ khóa phổ biến</h5>
-                            <p><b>Nguyễn Minh Phường </b></p>
-                            <p>Điện thoại: <b>0938 832 385</b></p>
-                            <p>Địa chỉ: 220 Nguyễn Hữu Cảnh , P22, Q. Bình Thạnh TP HCM</p>
-                            <p>Địa chỉ: 220 Nguyễn Hữu Cảnh , P22, Q. Bình Thạnh TP HCM</p>
-                            <p>Địa chỉ: 220 Nguyễn Hữu Cảnh , P22, Q. Bình Thạnh TP HCM</p>
+                            <p>Địa chỉ: 220 Nguyễn Hữu Cảnh</p>
+                            <p>Địa chỉ: 220 Nguyễn Hữu Cảnh</p>
+                            <p>Địa chỉ: 220 Nguyễn Hữu Cảnh</p>
+                            <p>Địa chỉ: 220 Nguyễn Hữu Cảnh</p>
+                            <p>Địa chỉ: 220 Nguyễn Hữu Cảnh</p>
                         </div>
                     </div>
                 </div>

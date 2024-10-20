@@ -98,22 +98,24 @@ const treeSelectNodes = ref([
 ]);
 
 const queryCar = async () => {
+    queryParams.brandId = selectedNode.value;
+    queryParams.originId = dropdownItem.value;
+    queryParams.cityId = province.value;
+    queryParams.styleId = gearItem.value;
+    queryParams.fuelId = selectedNode.value;
+    queryParams.minPrice = firstPrice.value;
+    queryParams.maxPrice = lastPrice.value;
+    queryParams.page = pagination.value;
+
     const res = await axiosInstance.post('/cars/query', {
         ...queryParams
     });
     console.log('res', res);
 };
-const paramChange = computed(() => {
-    queryCar();
-    return !dropdownItem.value || gearItem.value || province.value || selectedNode.value || firstPrice.value || lastPrice.value;
-});
 onMounted(() => {
     queryCar();
 });
 watch(pagination, (val) => {
-    console.log(val);
-
-    console.log(queryParams);
     queryParams.page = val / 10 + 1;
 
     queryCar();
@@ -128,26 +130,26 @@ watch(pagination, (val) => {
                 <div class="p-fluid formgrid grid">
                     <div class="field col-12 md:col-4">
                         <label for="name1">Hãng xe</label>
-                        <TreeSelect v-model="selectedNode" :options="treeSelectNodes" placeholder="Chọn hãng xe"></TreeSelect>
+                        <TreeSelect @change="queryCar" v-model="selectedNode" :options="treeSelectNodes" placeholder="Chọn hãng xe"></TreeSelect>
                     </div>
                     <div class="field col-12 md:col-4">
                         <label for="state">Tình trạng xe</label>
-                        <Dropdown id="state" v-model="dropdownItem" :options="dropdownItems" optionLabel="name" placeholder="Chọn tình trạng xe"></Dropdown>
+                        <Dropdown @change="queryCar" id="state" v-model="dropdownItem" :options="dropdownItems" optionLabel="name" placeholder="Chọn tình trạng xe"></Dropdown>
                     </div>
                     <div class="field col-12 md:col-4">
                         <label for="province">Tỉnh thành</label>
-                        <Dropdown id="province" v-model="province" :options="provinces" optionLabel="name" placeholder="Chọn tỉnh thành"></Dropdown>
+                        <Dropdown @change="queryCar" id="province" v-model="province" :options="provinces" optionLabel="name" placeholder="Chọn tỉnh thành"> </Dropdown>
                     </div>
                     <div class="field col-12 md:col-6">
                         <label for="gear">Hộp số</label>
-                        <Dropdown id="gear" v-model="gearItem" :options="gearItems" optionLabel="name" placeholder="Chọn loại hộp số"></Dropdown>
+                        <Dropdown id="gear" @change="queryCar" v-model="gearItem" :options="gearItems" optionLabel="name" placeholder="Chọn loại hộp số"></Dropdown>
                     </div>
                     <div class="field col-12 md:col-6">
                         <label for="price">Khoảng giá</label>
                         <div class="price-display">
-                            <InputNumber class="price" v-model="firstPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
-                            <p v-if="paramChange">-</p>
-                            <InputNumber class="price" v-model="lastPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
+                            <InputNumber @update:modelValue="queryCar" class="price" v-model="firstPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
+                            <p style="margin-top: 5px">-</p>
+                            <InputNumber @update:modelValue="queryCar" class="price" v-model="lastPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
                         </div>
                     </div>
                 </div>
@@ -179,6 +181,6 @@ watch(pagination, (val) => {
     justify-content: space-between;
 }
 .price {
-    width: 350px;
+    width: 270px;
 }
 </style>

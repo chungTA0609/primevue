@@ -1,6 +1,11 @@
 <script setup>
 import { useRouter } from 'vue-router';
 
+import { useToast } from 'primevue/usetoast';
+import { useConfirm } from 'primevue/useconfirm';
+
+const expiredPopup = useConfirm();
+const toast = useConfirm();
 const router = useRouter();
 
 const props = defineProps({
@@ -11,6 +16,20 @@ const props = defineProps({
 });
 const gotoDetail = () => {
     router.push('/detail/1');
+};
+
+const confirm2 = (event) => {
+    expiredPopup.require({
+        target: event.target,
+        message: 'Chọn ngày tin hết hạn',
+        icon: 'pi pi-exclamation-triangle',
+        accept: () => {
+            toast.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
+        },
+        reject: () => {
+            toast.add({ severity: 'info', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+        }
+    });
 };
 </script>
 <template>
@@ -41,6 +60,11 @@ const gotoDetail = () => {
                         <div class="place">Thanh Xuyên, Hoàng Long, Phú Xuyên, Hà Nội</div>
                     </div>
                     <div class="phone-number">ĐT: 0909 799 678 - 0909 799 676</div>
+                    <div class="flex flex-wrap gap-2 mt-1" style="float: right">
+                        <div>
+                            <Button ref="popup2" @click="confirm2($event)" label="Đặt ngày hết hạn" class="mr-2"></Button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { CountryService } from '@/service/CountryService';
 import { NodeService } from '@/service/NodeService';
 
@@ -11,14 +11,31 @@ const dropdownValues = ref([
     { name: 'Istanbul', code: 'IST' },
     { name: 'Paris', code: 'PRS' }
 ]);
-const dropdownValue = ref(null);
+const brand = ref(dropdownValues.value[0]);
+const name = ref(dropdownValues.value[0]);
+const date = ref(dropdownValues.value[0]);
+const version = ref(null);
+const shape = ref(dropdownValues.value[0]);
+const origin = ref(dropdownValues.value[0]);
+const kmUsed = ref(null);
+const statusCar = ref(dropdownValues.value[0]);
+const gear = ref(dropdownValues.value[0]);
+const fuelType = ref(dropdownValues.value[0]);
 const treeSelectNodes = ref(null);
+const price = ref(null);
+const interior = ref(null);
+const exterior = ref(null);
+const places = ref(null);
+const driveSystem = ref(null);
 const countryService = new CountryService();
 const nodeService = new NodeService();
 
 onMounted(() => {
     countryService.getCountries().then((data) => (autoValue.value = data));
     nodeService.getTreeNodes().then((data) => (treeSelectNodes.value = data));
+});
+const enableButton = computed(() => {
+    return !!brand.value && !!name.value && !!date.value && !!shape.value && !!origin.value && !!statusCar.value && !!price.value;
 });
 </script>
 <template>
@@ -44,40 +61,44 @@ onMounted(() => {
 
                             <div class="grid formgrid mt-4">
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
-                                    <h5>Hãng sản xuất</h5>
-                                    <Dropdown v-model="dropdownValue" :options="dropdownValues" optionLabel="name" placeholder="Hãng" />
+                                    <h5>Hãng sản xuất <b style="color: red">*</b></h5>
+                                    <Dropdown :invalid="!brand" v-model="brand" :options="dropdownValues" optionLabel="name" placeholder="Hãng" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
-                                    <h5>Tên xe</h5>
-                                    <Dropdown v-model="dropdownValue" :options="dropdownValues" optionLabel="name" placeholder="Tên xe" />
+                                    <h5>Tên xe <b style="color: red">*</b></h5>
+                                    <Dropdown v-model="name" :options="dropdownValues" optionLabel="name" placeholder="Tên xe" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
-                                    <h5>Năm sản xuất</h5>
-                                    <Dropdown v-model="dropdownValue" :options="dropdownValues" optionLabel="name" placeholder="Năm" />
+                                    <h5>Năm sản xuất <b style="color: red">*</b></h5>
+                                    <Dropdown v-model="date" :options="dropdownValues" optionLabel="name" placeholder="Năm" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Phiên bản</h5>
-                                    <InputText placeholder="Phiên bản" />
+                                    <InputText v-model="version" placeholder="Phiên bản" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
-                                    <h5>Kiểu dáng</h5>
-                                    <Dropdown v-model="dropdownValue" :options="dropdownValues" optionLabel="name" placeholder="Kiểu dáng" />
+                                    <h5>Kiểu dáng <b style="color: red">*</b></h5>
+                                    <Dropdown v-model="shape" :options="dropdownValues" optionLabel="name" placeholder="Kiểu dáng" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
-                                    <h5>Xuất xứ</h5>
-                                    <Dropdown v-model="dropdownValue" :options="dropdownValues" optionLabel="name" placeholder="Xuất xứ" />
+                                    <h5>Xuất xứ <b style="color: red">*</b></h5>
+                                    <Dropdown v-model="origin" :options="dropdownValues" optionLabel="name" placeholder="Xuất xứ" />
+                                </div>
+                                <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
+                                    <h5>Tình trạng <b style="color: red">*</b></h5>
+                                    <Dropdown v-model="statusCar" :options="dropdownValues" optionLabel="name" placeholder="Tình trạng" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Số km đã đi</h5>
-                                    <InputText placeholder="Số km" />
+                                    <InputText v-model="kmUsed" placeholder="Số km" />
                                 </div>
                                 <div class="col-12 mb-4 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Hộp số</h5>
-                                    <Dropdown v-model="dropdownValue" :options="dropdownValues" optionLabel="name" placeholder="Hộp số" />
+                                    <Dropdown v-model="gear" :options="dropdownValues" optionLabel="name" placeholder="Hộp số" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Nhiên liệu</h5>
-                                    <Dropdown v-model="dropdownValue" :options="dropdownValues" optionLabel="name" placeholder="Loại nhiên liệu" />
+                                    <Dropdown v-model="fuelType" :options="dropdownValues" optionLabel="name" placeholder="Loại nhiên liệu" />
                                 </div>
                             </div>
                         </div>
@@ -89,24 +110,24 @@ onMounted(() => {
 
                             <div class="grid formgrid mt-4">
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
-                                    <h5>Giá</h5>
-                                    <InputNumber class="price" v-model="firstPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid placeholder="đồng" />
+                                    <h5>Giá <b style="color: red">*</b></h5>
+                                    <InputNumber class="price" v-model="price" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid placeholder="đồng" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Ngoại thất</h5>
-                                    <Dropdown v-model="dropdownValue" :options="dropdownValues" optionLabel="name" />
+                                    <Dropdown v-model="exterior" :options="dropdownValues" optionLabel="name" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Nội thất</h5>
-                                    <Dropdown v-model="dropdownValue" :options="dropdownValues" optionLabel="name" />
+                                    <Dropdown v-model="interior" :options="dropdownValues" optionLabel="name" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Số chỗ ngồi</h5>
-                                    <InputNumber inputId="integeronly" fluid />
+                                    <InputNumber v-model="places" inputId="integeronly" fluid placeholder="Nhập số chỗ ngồi" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Dẫn động</h5>
-                                    <Dropdown v-model="dropdownValue" :options="dropdownValues" optionLabel="name" />
+                                    <Dropdown v-model="driveSystem" :options="dropdownValues" optionLabel="name" />
                                 </div>
                             </div>
                         </div>
@@ -159,6 +180,9 @@ Lưu ý:
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="col-12 md:col-12 flex" style="justify-content: end">
+                        <Button label="Đăng tin" style="width: 120px" :disabled="!enableButton"></Button>
                     </div>
                 </div>
             </div>

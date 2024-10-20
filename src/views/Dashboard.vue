@@ -4,9 +4,13 @@ import { ProductService } from '@/service/ProductService';
 import { useLayout } from '@/layout/composables/layout';
 import CarInfoComp from '../components/CarInfoComp.vue';
 import axiosInstance from '../service/axiosInstance';
-const { isDarkTheme } = useLayout();
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
+const { isDarkTheme } = useLayout();
 const products = ref(null);
+const tinBan = ref(null);
+const tinMua = ref(null);
 const listButton = ref([
     'Audi',
     'Bently',
@@ -45,6 +49,7 @@ const setBranch = (branch) => {
 
     branchSearch.value = branch;
     console.log(branchSearch.value);
+    if (branch === 'Tất cả các hãng') router.push('/mua-xe');
     queryCar();
 };
 const queryCar = () => {
@@ -135,6 +140,9 @@ const applyDarkTheme = () => {
     };
 };
 
+const search = () => {
+    console.log('search');
+};
 watch(
     isDarkTheme,
     (val) => {
@@ -153,21 +161,27 @@ watch(
         <h5>Tìm kiếm</h5>
         <TabView>
             <TabPanel header="Tìm kiếm tin mua">
-                <div class="grid formgrid">
-                    <div class="col-12 mb-2 lg:col-12">
+                <div class="formgrid flex">
+                    <div class="col-11" style="padding: 0; margin-right: 5px">
                         <IconField iconPosition="left">
-                            <InputText type="text" placeholder="Search" style="width: 100%" />
+                            <InputText @keyup.enter="search" v-model="tinMua" type="text" placeholder="Search" style="width: 100%" />
                             <InputIcon class="pi pi-search" />
                         </IconField>
+                    </div>
+                    <div class="col-1" style="padding: 0">
+                        <Button label="Tìm kiếm" @click="search"></Button>
                     </div></div
             ></TabPanel>
             <TabPanel header="Tìm kiếm tin bán">
-                <div class="grid formgrid">
-                    <div class="col-12 mb-2 lg:col-12">
+                <div class="formgrid flex">
+                    <div class="col-11" style="padding: 0; margin-right: 5px">
                         <IconField iconPosition="left">
-                            <InputText type="text" placeholder="Search" style="width: 100%" />
+                            <InputText v-model="tinBan" @keyup.enter="search" type="text" placeholder="Search" style="width: 100%" />
                             <InputIcon class="pi pi-search" />
                         </IconField>
+                    </div>
+                    <div class="col-1" style="padding: 0">
+                        <Button label="Tìm kiếm" @click="search"></Button>
                     </div>
                 </div>
             </TabPanel>

@@ -2,6 +2,7 @@
 import { ref, onMounted, computed, reactive, watch } from 'vue';
 import { ProductService } from '@/service/ProductService';
 import axiosInstance from '../../service/axiosInstance';
+import { useRouter } from 'vue-router';
 const dropdownItems = ref([
     { name: 'Tất cả', code: 'all' },
     { name: 'Xe mới', code: 'new' },
@@ -13,6 +14,7 @@ const provinces = ref([
     { name: 'Hà Nội', code: 'HNI' },
     { name: 'TP. Hồ Chí Minh', code: 'HCM' }
 ]);
+const router = useRouter();
 const province = ref(1);
 
 const dropdownItem = ref(0);
@@ -82,7 +84,7 @@ watch(pagination, (val) => {
                                     <div class="pt-2">
                                         <div class="flex flex-row justify-content-between align-items-start gap-2">
                                             <div>
-                                                <span class="text-lg font-medium text-900">{{ item.category }}</span>
+                                                <span class="text-lg font-medium text-900" @click="router.push('/salon/1')">{{ item.category }}</span>
                                                 <div v-if="!changeParam" class="font-medium text-secondary text-sm mt-1">{{ item.name }}</div>
                                                 <div class="text-lg font-medium text-800 mt-3">{{ item.description }}</div>
                                             </div>

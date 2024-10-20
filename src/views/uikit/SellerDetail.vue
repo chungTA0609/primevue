@@ -1,27 +1,13 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import axiosInstance from '../../service/axiosInstance';
 
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from 'primevue/useconfirm';
-const confirmPopup = useConfirm();
+const vipPopup = useConfirm();
+const expiredPopup = useConfirm();
 const toast = useToast();
-
-const dropdownItems = ref([
-    { name: 'Tất cả', code: 'all' },
-    { name: 'Xe mới', code: 'new' },
-    { name: 'Xe cũ', code: 'used' }
-]);
-const gearItems = ref([
-    { name: 'Tất cả', code: 'all' },
-    { name: 'Số sàn', code: 'handle' },
-    { name: 'Số tự động', code: 'auto' }
-]);
-const provinces = ref([
-    { name: 'Toàn quốc', code: 'all' },
-    { name: 'Hà Nội', code: 'HNI' },
-    { name: 'TP. Hồ Chí Minh', code: 'HCM' }
-]);
+const toast2 = useToast();
 
 const dropdownItem = ref(0);
 const gearItem = ref(0);
@@ -29,61 +15,6 @@ const province = ref(0);
 const selectedNode = ref(0);
 const firstPrice = ref(0);
 const lastPrice = ref(0);
-
-const treeSelectNodes = ref([
-    {
-        key: '0',
-        label: 'Audi',
-        data: 'Documents Folder',
-        children: [
-            {
-                key: '0-0',
-                label: 'Work',
-                data: 'Work Folder',
-                children: [
-                    { key: '0-0-0', label: 'Expenses.doc', data: 'Expenses Document' },
-                    { key: '0-0-1', label: 'Resume.doc', data: 'Resume Document' }
-                ]
-            },
-            { key: '0-1', label: 'Home', data: 'Home Folder', children: [{ key: '0-1-0', label: 'Invoices.txt', data: 'Invoices for this month' }] }
-        ]
-    },
-    {
-        key: '1',
-        label: 'Bently',
-        data: 'Events Folder',
-        children: [
-            { key: '1-0', label: 'Meeting', data: 'Meeting' },
-            { key: '1-1', label: 'Product Launch', data: 'Product Launch' },
-            { key: '1-2', label: 'Report Review', data: 'Report Review' }
-        ]
-    },
-    {
-        key: '2',
-        label: 'BMW',
-        data: 'Movies Folder',
-        children: [
-            {
-                key: '2-0',
-                label: 'Al Pacino',
-                data: 'Pacino Movies',
-                children: [
-                    { key: '2-0-0', label: 'Scarface', data: 'Scarface Movie' },
-                    { key: '2-0-1', label: 'Serpico', data: 'Serpico Movie' }
-                ]
-            },
-            {
-                key: '2-1',
-                label: 'Robert De Niro',
-                data: 'De Niro Movies',
-                children: [
-                    { key: '2-1-0', label: 'Goodfellas', data: 'Goodfellas Movie' },
-                    { key: '2-1-1', label: 'Untouchables', data: 'Untouchables Movie' }
-                ]
-            }
-        ]
-    }
-]);
 
 const queryCar = () => {
     axiosInstance.post('/cars/query', {
@@ -105,16 +36,16 @@ const queryCar = () => {
         ]
     });
 };
-const paramChange = computed(() => {
-    queryCar();
-    return !dropdownItem.value || gearItem.value || province.value || selectedNode.value || firstPrice.value || lastPrice.value;
-});
+// const paramChange = computed(() => {
+//     queryCar();
+//     return !dropdownItem.value || gearItem.value || province.value || selectedNode.value || firstPrice.value || lastPrice.value;
+// });
 onMounted(() => {
     queryCar();
 });
 
-const confirm = (event) => {
-    confirmPopup.require({
+const confirm1 = (event) => {
+    vipPopup.require({
         target: event.target,
         message: 'Are you sure you want to proceed?',
         icon: 'pi pi-exclamation-triangle',
@@ -144,7 +75,7 @@ const confirm = (event) => {
                                     </div>
                                 </template></ConfirmPopup
                             >
-                            <Button ref="popup" @click="confirm($event)" label="VIP" class="mr-2"></Button>
+                            <Button id="vip" ref="popup" @click="confirm1($event)" label="VIP" class="mr-2"></Button>
                         </div>
                     </div>
                 </div>
@@ -180,102 +111,23 @@ const confirm = (event) => {
         <div class="col-12">
             <div class="card">
                 <div class="flex" style="justify-content: space-between">
-                    <h5>Danh sách tin mua xe</h5>
+                    <h5>Danh sách xe đang bán</h5>
                     <div class="right-part" style="float: right"><h9>Tổng: 12345</h9></div>
                 </div>
                 <hr />
-                <Paginator :rows="10" :totalRecords="120" :rowsPerPageOptions="[10, 20, 30]"></Paginator>
+                <Paginator :rows="10" :totalRecords="120"></Paginator>
                 <div class="col-12 car-comp">
-                    <div class="card">
-                        <div class="title-contain flex" style="font-size: 20px">
-                            <p class="mr-1">Tiêu đề:</p>
-                            <p><b>Tìm mua xe kéo</b></p>
-                        </div>
-                        <div class="content-contain" style="font-size: 20px">
-                            <h5 class="mr-1">Nội dung:</h5>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                        </div>
-                    </div>
+                    <CarInfoComp></CarInfoComp>
                 </div>
                 <div class="col-12 car-comp">
-                    <div class="card">
-                        <div class="title-contain flex" style="font-size: 20px">
-                            <p class="mr-1">Tiêu đề:</p>
-                            <p><b>Tìm mua xe kéo</b></p>
-                        </div>
-                        <div class="content-contain" style="font-size: 20px">
-                            <h5 class="mr-1">Nội dung:</h5>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                        </div>
-                    </div>
+                    <CarInfoComp></CarInfoComp>
                 </div>
                 <div class="col-12 car-comp">
-                    <div class="card">
-                        <div class="title-contain flex" style="font-size: 20px">
-                            <p class="mr-1">Tiêu đề:</p>
-                            <p><b>Tìm mua xe kéo</b></p>
-                        </div>
-                        <div class="content-contain" style="font-size: 20px">
-                            <h5 class="mr-1">Nội dung:</h5>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                        </div>
-                    </div>
+                    <CarInfoComp></CarInfoComp>
                 </div>
                 <div class="col-12 car-comp">
-                    <div class="card">
-                        <div class="title-contain flex" style="font-size: 20px">
-                            <p class="mr-1">Tiêu đề:</p>
-                            <p><b>Tìm mua xe kéo</b></p>
-                        </div>
-                        <div class="content-contain" style="font-size: 20px">
-                            <h5 class="mr-1">Nội dung:</h5>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                        </div>
-                    </div>
+                    <CarInfoComp></CarInfoComp>
                 </div>
-                <div class="col-12 car-comp">
-                    <div class="card">
-                        <div class="title-contain flex" style="font-size: 20px">
-                            <p class="mr-1">Tiêu đề:</p>
-                            <p><b>Tìm mua xe kéo</b></p>
-                        </div>
-                        <div class="content-contain" style="font-size: 20px">
-                            <h5 class="mr-1">Nội dung:</h5>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                            <p><b>- Tìm mua xe kéo</b></p>
-                        </div>
-                    </div>
-                </div>
-                <Paginator :rows="10" :totalRecords="120" :rowsPerPageOptions="[10, 20, 30]"></Paginator>
             </div>
         </div>
     </div>

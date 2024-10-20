@@ -1,14 +1,11 @@
 <script setup>
-import { ref, onBeforeMount, reactive } from 'vue';
+import { ref, onBeforeMount } from 'vue';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { CustomerService } from '@/service/CustomerService';
 import { ProductService } from '@/service/ProductService';
 import { useRouter } from 'vue-router';
-const customer1 = ref(null);
 const customer2 = ref(null);
-const customer3 = ref(null);
 const filters1 = ref(null);
-const loading1 = ref(null);
 const loading2 = ref(null);
 const idFrozen = ref(false);
 const products = ref(null);
@@ -81,7 +78,7 @@ const gotoBuyer = (event) => {
     <div class="grid">
         <div class="col-12">
             <div class="card">
-                <h5>Quản lý người mua</h5>
+                <h5>Quản lý người bán</h5>
                 <DataTable selectionMode="single" @rowSelect="gotoSeller($event)" :value="customer2" :scrollable="true" scrollHeight="400px" :loading="loading2" scrollDirection="both" class="mt-3">
                     <Column field="id" header="ID" style="min-width: 100px" :frozen="idFrozen"></Column>
                     <Column field="name" header="Tên" style="min-width: 200px" frozen></Column>
@@ -100,15 +97,10 @@ const gotoBuyer = (event) => {
                         </template>
                     </Column>
                     <Column field="country.name" header="Địa chỉ" style="min-width: 400px"></Column>
-                    <Column field="balance" header="Balance" style="min-width: 200px" frozen alignFrozen="right">
-                        <template #body="{ data }">
-                            <span class="text-bold">{{ formatCurrency(data.balance) }}</span>
-                        </template>
-                    </Column>
                 </DataTable>
             </div>
             <div class="card mt-4">
-                <h5>Quản lý người bán</h5>
+                <h5>Quản lý người mua</h5>
                 <DataTable selectionMode="single" @rowSelect="gotoBuyer($event)" :value="customer2" :scrollable="true" scrollHeight="400px" :loading="loading2" scrollDirection="both" class="mt-3">
                     <Column field="id" header="ID" style="min-width: 100px" :frozen="idFrozen"></Column>
                     <Column field="name" header="Tên" style="min-width: 200px" frozen></Column>
@@ -127,11 +119,6 @@ const gotoBuyer = (event) => {
                         </template>
                     </Column>
                     <Column field="activity" header="Địa chỉ" style="min-width: 200px"></Column>
-                    <Column field="balance" header="Balance" style="min-width: 200px" frozen alignFrozen="right">
-                        <template #body="{ data }">
-                            <span class="text-bold">{{ formatCurrency(data.balance) }}</span>
-                        </template>
-                    </Column>
                 </DataTable>
             </div>
         </div>
