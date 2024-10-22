@@ -9,34 +9,15 @@ import { useLayout } from '@/layout/composables/layout';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 import { CustomerService } from '@/service/CustomerService';
 import { ProductService } from '@/service/ProductService';
-import { useRouter } from 'vue-router';
+// import { useRouter } from 'vue-router';
 const customer2 = ref(null);
 const filters1 = ref(null);
 const loading2 = ref(null);
-const idFrozen = ref(false);
+// const idFrozen = ref(false);
 const products = ref(null);
-const router = useRouter();
+// const router = useRouter();
 const customerService = new CustomerService();
 const productService = new ProductService();
-
-const getSeverity = (status) => {
-    switch (status) {
-        case 'unqualified':
-            return 'danger';
-
-        case 'qualified':
-            return 'success';
-
-        case 'new':
-            return 'info';
-
-        case 'vip':
-            return 'warning';
-
-        case 'renewal':
-            return null;
-    }
-};
 
 onBeforeMount(() => {
     productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
@@ -66,14 +47,6 @@ const initFilters1 = () => {
     };
 };
 
-const gotoSeller = (event) => {
-    console.log(event);
-    router.push('/seller/1');
-};
-const gotoBuyer = (event) => {
-    console.log(event);
-    router.push('/buyer/1');
-};
 const { layoutConfig, layoutState, isSidebarActive } = useLayout();
 
 const outsideClickListener = ref(null);

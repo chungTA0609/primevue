@@ -5,9 +5,9 @@ import axiosInstance from '../../service/axiosInstance';
 import { useToast } from 'primevue/usetoast';
 import { useConfirm } from 'primevue/useconfirm';
 const vipPopup = useConfirm();
-const expiredPopup = useConfirm();
+// const expiredPopup = useConfirm();
 const toast = useToast();
-const toast2 = useToast();
+// const toast2 = useToast();
 
 const dropdownItem = ref(0);
 const gearItem = ref(0);

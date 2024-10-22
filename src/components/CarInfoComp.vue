@@ -3,12 +3,12 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-const props = defineProps({
-    title: {
-        type: String,
-        defaul: null
-    }
-});
+// const props = defineProps({
+//     title: {
+//         type: String,
+//         defaul: null
+//     }
+// });
 const gotoDetail = () => {
     router.push('/detail/1');
 };

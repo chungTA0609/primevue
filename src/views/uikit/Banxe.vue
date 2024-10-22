@@ -35,7 +35,7 @@ const interior = ref(null);
 const exterior = ref(null);
 const places = ref(null);
 const driveSystem = ref(null);
-const op = ref(null);
+// const op = ref(null);
 const pagination = ref(1);
 const dateExpired = ref(null);
 

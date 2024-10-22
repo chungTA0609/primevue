@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import axiosInstance from '../../service/axiosInstance';
 const dropdownItems = ref([
     { name: 'Tất cả', code: 'all' },

@@ -6,13 +6,6 @@ import { CountryService } from '@/service/CountryService';
 import { NodeService } from '@/service/NodeService';
 import { PhotoService } from '@/service/PhotoService';
 const autoValue = ref(null);
-const dropdownValues = ref([
-    { name: 'New York', code: 'NY' },
-    { name: 'Rome', code: 'RM' },
-    { name: 'London', code: 'LDN' },
-    { name: 'Istanbul', code: 'IST' },
-    { name: 'Paris', code: 'PRS' }
-]);
 const images = ref([]);
 const treeSelectNodes = ref(null);
 const countryService = new CountryService();

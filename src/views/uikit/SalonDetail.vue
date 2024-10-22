@@ -12,13 +12,6 @@ import { GoogleMap, Marker } from 'vue3-google-map';
 const center = { lat: 40.689247, lng: -74.044502 };
 const router = useRouter();
 const autoValue = ref(null);
-const dropdownValues = ref([
-    { name: 'New York', code: 'NY' },
-    { name: 'Rome', code: 'RM' },
-    { name: 'London', code: 'LDN' },
-    { name: 'Istanbul', code: 'IST' },
-    { name: 'Paris', code: 'PRS' }
-]);
 const productService = new ProductService();
 
 const images = ref([]);

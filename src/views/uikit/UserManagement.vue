@@ -60,10 +60,6 @@ const initFilters1 = () => {
     };
 };
 
-const formatCurrency = (value) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-};
-
 const gotoSeller = (event) => {
     console.log(event);
     router.push('/seller/1');
