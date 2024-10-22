@@ -49,21 +49,6 @@ const router = createRouter({
                     component: () => import('@/views/uikit/Detail.vue')
                 },
                 {
-                    path: '/admin',
-                    name: 'admin',
-                    component: () => import('@/views/uikit/Admin.vue')
-                },
-                {
-                    path: '/seller/:id',
-                    name: 'seller',
-                    component: () => import('@/views/uikit/SellerDetail.vue')
-                },
-                {
-                    path: '/buyer/:id',
-                    name: 'buyer',
-                    component: () => import('@/views/uikit/BuyerDetail.vue')
-                },
-                {
                     path: '/uikit/button',
                     name: 'button',
                     component: () => import('@/views/uikit/Button.vue')
@@ -165,6 +150,43 @@ const router = createRouter({
                     path: '/documentation',
                     name: 'documentation',
                     component: () => import('@/views/utilities/Documentation.vue')
+                }
+            ]
+        },
+        {
+            path: '/admin',
+            name: 'admin',
+            component: () => import('@/views/uikit/Admin.vue'),
+            children: [
+                {
+                    path: '/admin',
+                    name: 'user',
+                    component: () => import('@/views/uikit/UserManagement.vue')
+                },
+                {
+                    path: '/setting',
+                    name: 'setting',
+                    component: () => import('@/views/uikit/Setting.vue')
+                },
+                {
+                    path: '/seller',
+                    name: 'seller',
+                    component: () => import('@/views/uikit/Seller.vue')
+                },
+                {
+                    path: '/buyer',
+                    name: 'buyer',
+                    component: () => import('@/views/uikit/Buyer.vue')
+                },
+                {
+                    path: '/seller/:id',
+                    name: 'sellerDetail',
+                    component: () => import('@/views/uikit/SellerDetail.vue')
+                },
+                {
+                    path: '/buyer/:id',
+                    name: 'buyerDetail',
+                    component: () => import('@/views/uikit/BuyerDetail.vue')
                 }
             ]
         },
