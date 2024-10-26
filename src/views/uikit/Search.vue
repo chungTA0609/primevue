@@ -20,8 +20,11 @@ const provinces = ref([
 const dropdownItem = ref(0);
 const gearItem = ref(0);
 const province = ref(0);
+const style = ref(0);
 const selectedNode = ref(0);
 const firstPrice = ref(0);
+const fuel = ref(0);
+const origin = ref(0);
 const lastPrice = ref(0);
 const pagination = ref(1);
 const queryParams = reactive({
@@ -42,61 +45,10 @@ const queryParams = reactive({
         }
     ]
 });
-const treeSelectNodes = ref([
-    {
-        key: '0',
-        label: 'Audi',
-        data: 'Documents Folder',
-        children: [
-            {
-                key: '0-0',
-                label: 'Work',
-                data: 'Work Folder',
-                children: [
-                    { key: '0-0-0', label: 'Expenses.doc', data: 'Expenses Document' },
-                    { key: '0-0-1', label: 'Resume.doc', data: 'Resume Document' }
-                ]
-            },
-            { key: '0-1', label: 'Home', data: 'Home Folder', children: [{ key: '0-1-0', label: 'Invoices.txt', data: 'Invoices for this month' }] }
-        ]
-    },
-    {
-        key: '1',
-        label: 'Bently',
-        data: 'Events Folder',
-        children: [
-            { key: '1-0', label: 'Meeting', data: 'Meeting' },
-            { key: '1-1', label: 'Product Launch', data: 'Product Launch' },
-            { key: '1-2', label: 'Report Review', data: 'Report Review' }
-        ]
-    },
-    {
-        key: '2',
-        label: 'BMW',
-        data: 'Movies Folder',
-        children: [
-            {
-                key: '2-0',
-                label: 'Al Pacino',
-                data: 'Pacino Movies',
-                children: [
-                    { key: '2-0-0', label: 'Scarface', data: 'Scarface Movie' },
-                    { key: '2-0-1', label: 'Serpico', data: 'Serpico Movie' }
-                ]
-            },
-            {
-                key: '2-1',
-                label: 'Robert De Niro',
-                data: 'De Niro Movies',
-                children: [
-                    { key: '2-1-0', label: 'Goodfellas', data: 'Goodfellas Movie' },
-                    { key: '2-1-1', label: 'Untouchables', data: 'Untouchables Movie' }
-                ]
-            }
-        ]
-    }
-]);
-
+const brandList = ref([]);
+const fuelList = ref([]);
+const originList = ref([]);
+const styleList = ref([]);
 const queryCar = async () => {
     queryParams.brandId = selectedNode.value;
     queryParams.originId = dropdownItem.value;
@@ -112,7 +64,80 @@ const queryCar = async () => {
     });
     console.log('res', res);
 };
+const getAllBrand = async () => {
+    try {
+        const res = await axiosInstance.get('/brands');
+        brandList.value = res.data.data.map((element) => {
+            console.log(element);
+            return element;
+        });
+        console.log(brandList.value);
+    } catch (error) {
+        console.log(error);
+    }
+};
+const getAllFuel = async () => {
+    try {
+        const res = await axiosInstance.get('/fuels');
+        fuelList.value = res.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+const getAllCities = async () => {
+    try {
+        const res = await axiosInstance.get('/address/cities');
+        provinces.value = res.data.data;
+        console.log(brandList.value);
+    } catch (error) {
+        console.log(error);
+    }
+};
+const getAllOrigin = async () => {
+    try {
+        const res = await axiosInstance.get('/origins');
+        originList.value = res.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+const getAllStyle = async () => {
+    try {
+        const res = await axiosInstance.get('/styles');
+        styleList.value = res.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+// const getDistrictByCity = async (cityCode) => {
+//     try {
+//         const res = await axiosInstance.get('/address/district', { cityCode: cityCode });
+//         brandList.value = res.data.data.map((element) => {
+//             console.log(element);
+//             return element;
+//         });
+//         console.log(brandList.value);
+//     } catch (error) {
+//         console.log(error);
+//     }
+// };
+// const getWardByDistrict = async (districtCode) => {
+//     try {
+//         const res = await axiosInstance.get('/address/wards', { districtCode: districtCode });
+//         brandList.value = res.data.data.map((element) => {
+//             return element;
+//         });
+//         console.log(brandList.value);
+//     } catch (error) {
+//         console.log(error);
+//     }
+// };
 onMounted(() => {
+    getAllBrand();
+    getAllCities();
+    getAllStyle();
+    getAllOrigin();
+    getAllFuel();
     queryCar();
 });
 watch(pagination, (val) => {
@@ -130,7 +155,7 @@ watch(pagination, (val) => {
                 <div class="p-fluid formgrid grid">
                     <div class="field col-12 md:col-4">
                         <label for="name1">Hãng xe</label>
-                        <TreeSelect @change="queryCar" v-model="selectedNode" :options="treeSelectNodes" placeholder="Chọn hãng xe"></TreeSelect>
+                        <Dropdown @change="queryCar" id="state" v-model="selectedNode" :options="brandList" optionLabel="name" placeholder="Chọn tình hãng xe"></Dropdown>
                     </div>
                     <div class="field col-12 md:col-4">
                         <label for="state">Tình trạng xe</label>
@@ -151,6 +176,30 @@ watch(pagination, (val) => {
                             <p style="margin-top: 5px">-</p>
                             <InputNumber @update:modelValue="queryCar" class="price" v-model="lastPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
                         </div>
+                    </div>
+                    <div class="field col-12 md:col-4">
+                        <label for="fuel">Nhiên liệu</label>
+                        <Dropdown @change="queryCar" id="fuel" v-model="fuel" :options="fuelList" optionLabel="name" placeholder="Chọn loại nhiên liệu"></Dropdown>
+                    </div>
+                    <div class="field col-12 md:col-4">
+                        <label for="origin">Xuất xứ</label>
+                        <Dropdown @change="queryCar" id="origin" v-model="origin" :options="originList" optionLabel="name" placeholder="Chọn nơi xuất xứ"></Dropdown>
+                    </div>
+                    <div class="field col-12 md:col-4">
+                        <label for="color">Màu xe</label>
+                        <Dropdown @change="queryCar" id="color" v-model="color" :options="provinces" optionLabel="name" placeholder="Chọn màu xe"> </Dropdown>
+                    </div>
+                    <div class="field col-12 md:col-4">
+                        <label for="style">Kiểu dáng</label>
+                        <Dropdown @change="queryCar" id="style" v-model="style" :options="styleList" optionLabel="name" placeholder="Chọn tình hãng xe"></Dropdown>
+                    </div>
+                    <div class="field col-12 md:col-4">
+                        <label for="place">Số chỗ ngồi</label>
+                        <InputNumber @update:modelValue="queryCar" v-model="place" inputId="currency-us" fluid placeholder="Số chỗ ngồi" />
+                    </div>
+                    <div class="field col-12 md:col-4">
+                        <label for="gear">Dẫn động</label>
+                        <Dropdown @change="queryCar" id="gear" v-model="gear" :options="provinces" optionLabel="name" placeholder="Dẫn động"> </Dropdown>
                     </div>
                 </div>
             </div>

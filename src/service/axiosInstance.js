@@ -4,10 +4,8 @@ import axios from 'axios';
 
 // Create an instance of Axios
 const axiosInstance = axios.create({
-    baseURL: 'https://e11e-171-242-43-39.ngrok-free.app/api/', // Replace with your API base URL
-    timeout: 10000, // Set a timeout for requests,
-    'Access-Control-Allow-Origin': '*',
-    withCredentials: true // Allow sending credentials (cookies)
+    baseURL: 'http://localhost:8080/api/', // Replace with your API base URL
+    timeout: 10000 // Set a timeout for requests,
 });
 
 // Request interceptor to add authorization headers or other transformations
@@ -15,10 +13,8 @@ axiosInstance.interceptors.request.use(
     (config) => {
         let returnConfig = {
             ...config,
-            'Content-Type': 'application/json',
             accept: '*/*',
-            'Access-Control-Allow-Origin': '*',
-            withCredentials: true // Allow sending credentials (cookies)
+            'Content-Type': 'application/json'
         };
         // Add any custom headers, like authorization tokens
         const token = localStorage.getItem('token'); // Example: Get token from localStorage

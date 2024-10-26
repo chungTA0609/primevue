@@ -1,8 +1,11 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, reactive } from 'vue';
 import { CountryService } from '@/service/CountryService';
 import { NodeService } from '@/service/NodeService';
+import { useToast } from 'primevue/usetoast';
+import axios from 'axios';
 
+const toast = useToast();
 const autoValue = ref(null);
 const dropdownValues = ref([
     { name: 'New York', code: 'NY' },
@@ -29,6 +32,9 @@ const places = ref(null);
 const driveSystem = ref(null);
 const countryService = new CountryService();
 const nodeService = new NodeService();
+const fileupload = ref();
+const fileArr = reactive([]);
+const src = ref(null);
 
 onMounted(() => {
     countryService.getCountries().then((data) => (autoValue.value = data));
@@ -37,6 +43,33 @@ onMounted(() => {
 const enableButton = computed(() => {
     return !!brand.value && !!name.value && !!date.value && !!shape.value && !!origin.value && !!statusCar.value && !!price.value;
 });
+
+const onUpload = async (event) => {
+    const imgArr = event.files;
+    imgArr.forEach((element) => {
+        uploadImg(element);
+    });
+
+    const file = event.files[0];
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+        src.value = e.target.result;
+    };
+
+    reader.readAsDataURL(file);
+
+    toast.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
+};
+
+const uploadImg = async (element) => {
+    try {
+        const res = await axios.post('https://33b9-171-241-32-111.ngrok-free.app/api/files/upload', element);
+        console.log(res);
+    } catch (error) {
+        console.log(error);
+    }
+};
 </script>
 <template>
     <div class="grid p-fluid">
@@ -153,7 +186,7 @@ Lưu ý:
                     <div class="col-12 md:col-12">
                         <div class="card mt-4">
                             <h5>Đăng ảnh cho xe (ít nhất 5 ảnh tương ứng 5 góc chụp khác nhau nếu có)</h5>
-                            <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000" @uploader="onUpload" customUpload :multiple="true" />
+                            <FileUpload v-model="fileArr" ref="fileupload" url="https://33b9-171-241-32-111.ngrok-free.app/api/files/upload" name="demo[]" @uploader="onUpload" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload />
                         </div>
                     </div>
                     <div class="col-12 md:col-12">

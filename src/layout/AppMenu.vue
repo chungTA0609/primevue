@@ -9,7 +9,31 @@ const model = ref([
         items: [
             { label: 'Tài khoản bán', icon: 'pi pi-fw pi-id-card', to: '/seller' },
             { label: 'Tài khoản mua', icon: 'pi pi-fw pi-check-square', to: '/buyer' },
-            { label: 'Chỉnh sửa hệ thống', icon: 'pi pi-fw pi-bookmark', to: '/setting' }
+            {
+                label: 'Chỉnh sửa hệ thống',
+                items: [
+                    {
+                        label: 'Quản lý Hãng',
+                        to: '/brand-car'
+                    },
+                    {
+                        label: 'Quản lý mẫu xe',
+                        to: '/model-car'
+                    },
+                    {
+                        label: 'Quản lý Kiểu xe',
+                        to: '/style-car'
+                    },
+                    {
+                        label: 'Quản lý Xuất xứ xe',
+                        to: '/origin-car'
+                    },
+                    {
+                        label: 'Quản lý loại nhiên liệu',
+                        to: '/fuel-car'
+                    }
+                ]
+            }
         ]
     }
 ]);

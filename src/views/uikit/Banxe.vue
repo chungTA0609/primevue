@@ -42,6 +42,7 @@ const dateExpired = ref(null);
 const countryService = new CountryService();
 const nodeService = new NodeService();
 const listSellCar = reactive([1, 2]);
+const fileArr = reactive([]);
 onMounted(() => {
     countryService.getCountries().then((data) => (autoValue.value = data));
     nodeService.getTreeNodes().then((data) => (treeSelectNodes.value = data));
@@ -188,7 +189,7 @@ Lưu ý:
                     <div class="col-12 md:col-12">
                         <div class="card mt-4">
                             <h5>Đăng ảnh cho xe (ít nhất 5 ảnh tương ứng 5 góc chụp khác nhau nếu có)</h5>
-                            <FileUpload mode="basic" name="demo[]" accept="image/*" :maxFileSize="1000000" @uploader="onUpload" customUpload :multiple="true" />
+                            <FileUpload v-model="fileArr" name="demo[]" @uploader="onUpload" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload />
                         </div>
                     </div>
                     <div class="col-12 md:col-12">

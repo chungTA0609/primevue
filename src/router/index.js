@@ -164,6 +164,31 @@ const router = createRouter({
                     component: () => import('@/views/uikit/UserManagement.vue')
                 },
                 {
+                    path: '/brand-car',
+                    name: 'brand-car',
+                    component: () => import('@/views/uikit/BrandCar.vue')
+                },
+                {
+                    path: '/model-car',
+                    name: 'model-car',
+                    component: () => import('@/views/uikit/ModelCar.vue')
+                },
+                {
+                    path: '/style-car',
+                    name: 'style-car',
+                    component: () => import('@/views/uikit/StyleCar.vue')
+                },
+                {
+                    path: '/origin-car',
+                    name: 'origin-car',
+                    component: () => import('@/views/uikit/OriginCar.vue')
+                },
+                {
+                    path: '/fuel-car',
+                    name: 'fuel-car',
+                    component: () => import('@/views/uikit/FuelCar.vue')
+                },
+                {
                     path: '/setting',
                     name: 'setting',
                     component: () => import('@/views/uikit/Setting.vue')
