@@ -8,6 +8,10 @@ import * as yup from 'yup'; // For schema-based validation
 import { toTypedSchema } from '@vee-validate/yup';
 import { useRouter } from 'vue-router';
 import axiosInstance from '../../../service/axiosInstance';
+import { useTokenCookie } from '../../../service/useTokenCookie';
+
+const { setTokenCookie } = useTokenCookie();
+
 const router = useRouter();
 const { layoutConfig } = useLayout();
 const { errors, defineField, handleSubmit } = useForm({
@@ -27,12 +31,13 @@ const [email, emailAttrs] = defineField('email');
 const [password, passwordAttrs] = defineField('password');
 
 // Define the submit handler
-const onSubmit = handleSubmit((values) => {
+const onSubmit = handleSubmit(async (values) => {
     console.log(values); // Do something with the valid form data
-    axiosInstance.post('/user', {
+    const res = await axiosInstance.post('/users/auth', {
         username: values.email,
         password: values.password
     });
+    setTokenCookie(res.data.data.token, 1);
 });
 const logoUrl = computed(() => {
     return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
@@ -47,6 +52,7 @@ const disableSubmit = computed(() => {
     <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
         <div class="flex flex-column align-items-center justify-content-center">
             <img :src="logoUrl" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" @click="router.push('/')" />
+            <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Đăng nhập</div>
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="w-full surface-card py-8 px-5 sm:px-8" style="border-radius: 53px">
                     <div>

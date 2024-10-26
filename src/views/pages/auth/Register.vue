@@ -7,6 +7,7 @@ import { useForm } from 'vee-validate';
 import * as yup from 'yup'; // For schema-based validation
 import { toTypedSchema } from '@vee-validate/yup';
 import { useRouter } from 'vue-router';
+import axiosInstance from '../../../service/axiosInstance';
 
 const router = useRouter();
 const { layoutConfig } = useLayout();
@@ -36,17 +37,25 @@ const [rePassword, rePasswordAttrs] = defineField('rePassword');
 const [fullName, fullNameAttrs] = defineField('fullName');
 
 // Define the submit handler
-const onSubmit = handleSubmit((values) => {
+const onSubmit = handleSubmit(async (values) => {
     console.log(values); // Do something with the valid form data
+    try {
+        const res = await axiosInstance.post('/users', {
+            username: values.username,
+            password: values.password
+        });
+        console.log(res);
+
+        router.push('/auth/login');
+    } catch (error) {
+        console.log(error);
+    }
 });
 const logoUrl = computed(() => {
     return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
 
 const disableSubmit = computed(() => {
-    console.log(isEmail(password.value));
-    console.log(errors.value);
-
     return !isEmail(password.value) || !(Object.keys(errors.value).length === 0 && errors.value.constructor === Object);
 });
 </script>

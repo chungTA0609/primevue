@@ -11,9 +11,7 @@ const props = defineProps({
     }
 });
 
-onMounted(() => {
-    console.log(props.dataCar);
-});
+onMounted(() => {});
 const gotoDetail = (slug) => {
     router.push(`/detail/${slug}`);
 };

@@ -41,8 +41,27 @@ const queryParams = reactive({
 });
 const brandList = ref([]);
 const fuelList = ref([]);
+const colorList = ref([]);
 const originList = ref([]);
 const styleList = ref([]);
+const transmissionList = ref([
+    {
+        code: 'FWD',
+        name: 'FWD - Dẫn động cầu trước'
+    },
+    {
+        code: 'RWD',
+        name: 'RWD - Dẫn động cầu sau'
+    },
+    {
+        code: '4WD',
+        name: '4WD - Dẫn động 4 bánh'
+    },
+    {
+        code: 'AWD',
+        name: 'AWD - 4 bánh toàn thời gian'
+    }
+]);
 const queryCar = async (type = null) => {
     try {
         queryParams.page = pagination.value;
@@ -52,6 +71,7 @@ const queryCar = async (type = null) => {
         queryParams.originId = origin.value?.id;
         queryParams.styleId = style.value?.id;
         queryParams.fuelId = fuel.value?.id;
+        queryParams.tranmission = fuel.value?.id;
         console.log(queryParams);
         if (type) queryParams.sortItems[0].field = type;
 
@@ -79,6 +99,14 @@ const getAllFuel = async () => {
     try {
         const res = await axiosInstance.get('/fuels');
         fuelList.value = res.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+const getAllColor = async () => {
+    try {
+        const res = await axiosInstance.get('/colors');
+        colorList.value = res.data.data;
     } catch (error) {
         console.log(error);
     }
@@ -136,12 +164,12 @@ onMounted(() => {
     getAllCities();
     getAllStyle();
     getAllOrigin();
+    getAllColor();
     getAllFuel();
     queryCar();
 });
 watch(pagination, (val) => {
     queryParams.page = val / 10;
-    console.log(val);
 
     queryCar();
 });
@@ -177,30 +205,34 @@ watch(pagination, (val) => {
                             <InputNumber @update:modelValue="queryCar('maxPrice')" class="price" v-model="lastPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
                         </div>
                     </div>
-                    <div class="field col-12 md:col-4">
-                        <label for="fuel">Nhiên liệu</label>
-                        <Dropdown @change="queryCar('fuelId')" id="fuel" v-model="fuel" :options="fuelList" optionLabel="name" placeholder="Chọn loại nhiên liệu"></Dropdown>
-                    </div>
-                    <div class="field col-12 md:col-4">
-                        <label for="origin">Xuất xứ</label>
-                        <Dropdown @change="queryCar('originId')" id="origin" v-model="origin" :options="originList" optionLabel="name" placeholder="Chọn nơi xuất xứ"></Dropdown>
-                    </div>
-                    <div class="field col-12 md:col-4">
-                        <label for="color">Màu xe</label>
-                        <Dropdown @change="queryCar('outsideColorId')" id="color" v-model="color" :options="provinces" optionLabel="name" placeholder="Chọn màu xe"> </Dropdown>
-                    </div>
-                    <div class="field col-12 md:col-4">
-                        <label for="style">Kiểu dáng</label>
-                        <Dropdown @change="queryCar('styleId')" id="style" v-model="style" :options="styleList" optionLabel="name" placeholder="Chọn tình hãng xe"></Dropdown>
-                    </div>
-                    <div class="field col-12 md:col-4">
-                        <label for="place">Số chỗ ngồi</label>
-                        <InputNumber @update:modelValue="queryCar" v-model="place" inputId="currency-us" fluid placeholder="Số chỗ ngồi" />
-                    </div>
-                    <div class="field col-12 md:col-4">
-                        <label for="gear">Dẫn động</label>
-                        <Dropdown @change="queryCar" id="gear" v-model="gear" :options="provinces" optionLabel="name" placeholder="Dẫn động"> </Dropdown>
-                    </div>
+                    <Panel style="width: 100%" header="Mở rộng điều kiện tìm kiếm" :toggleable="true" :collapsed="true">
+                        <div class="p-fluid formgrid grid">
+                            <div class="field col-12 md:col-4">
+                                <label for="fuel">Nhiên liệu</label>
+                                <Dropdown @change="queryCar('fuelId')" id="fuel" v-model="fuel" :options="fuelList" optionLabel="name" placeholder="Chọn loại nhiên liệu"></Dropdown>
+                            </div>
+                            <div class="field col-12 md:col-4">
+                                <label for="origin">Xuất xứ</label>
+                                <Dropdown @change="queryCar('originId')" id="origin" v-model="origin" :options="originList" optionLabel="name" placeholder="Chọn nơi xuất xứ"></Dropdown>
+                            </div>
+                            <div class="field col-12 md:col-4">
+                                <label for="color">Màu xe</label>
+                                <Dropdown @change="queryCar('outsideColorId')" id="color" v-model="color" :options="colorList" optionLabel="name" placeholder="Chọn màu xe"> </Dropdown>
+                            </div>
+                            <div class="field col-12 md:col-4">
+                                <label for="style">Kiểu dáng</label>
+                                <Dropdown @change="queryCar('styleId')" id="style" v-model="style" :options="styleList" optionLabel="name" placeholder="Chọn tình hãng xe"></Dropdown>
+                            </div>
+                            <div class="field col-12 md:col-4">
+                                <label for="place">Số chỗ ngồi</label>
+                                <InputNumber @update:modelValue="queryCar" v-model="place" inputId="currency-us" fluid placeholder="Số chỗ ngồi" />
+                            </div>
+                            <div class="field col-12 md:col-4">
+                                <label for="gear">Dẫn động</label>
+                                <Dropdown @change="queryCar('tranmission')" id="tranmission" v-model="tranmission" :options="transmissionList" optionLabel="name" placeholder="Dẫn động"> </Dropdown>
+                            </div>
+                        </div>
+                    </Panel>
                 </div>
             </div>
         </div>

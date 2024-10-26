@@ -2,11 +2,11 @@
 import { ref, onMounted, computed, reactive } from 'vue';
 import { CountryService } from '@/service/CountryService';
 import { NodeService } from '@/service/NodeService';
-import { useToast } from 'primevue/usetoast';
-import axios from 'axios';
+// import { useToast } from 'primevue/usetoast';
+// import axios from 'axios';
 import axiosInstance from '../../service/axiosInstance';
 
-const toast = useToast();
+// const toast = useToast();
 const autoValue = ref(null);
 const dropdownValues = ref([
     { name: 'Xe cũ', code: 'OLD' },
@@ -41,7 +41,7 @@ const address = ref();
 const ward = ref();
 const description = ref();
 const fileArr = reactive([]);
-const src = ref(null);
+// const src = ref(null);
 const brandList = ref([]);
 const models = ref([]);
 const fuelList = ref([]);
@@ -54,32 +54,32 @@ const provinces = ref([
     { name: 'Hà Nội', code: 'HNI' },
     { name: 'TP. Hồ Chí Minh', code: 'HCM' }
 ]);
-const carParam = ref({
-    name: 'string',
-    description: 'string',
-    manufacturingYear: 0,
-    seatCapacity: 1,
-    status: 'string',
-    transmission: 'string',
-    drivetrain: 'string',
-    images: ['string'],
-    slug: 'string',
-    version: 'string',
-    kmDriven: 0,
-    price: 0,
-    logo: 'string',
-    brandId: 0,
-    modelId: 0,
-    styleId: 0,
-    originId: 0,
-    fuelId: 0,
-    outsideColorId: 0,
-    insideColorId: 0,
-    cityId: 0,
-    districtId: 0,
-    wardId: 0,
-    address: 'string'
-});
+// const carParam = ref({
+//     name: 'string',
+//     description: 'string',
+//     manufacturingYear: 0,
+//     seatCapacity: 1,
+//     status: 'string',
+//     transmission: 'string',
+//     drivetrain: 'string',
+//     images: ['string'],
+//     slug: 'string',
+//     version: 'string',
+//     kmDriven: 0,
+//     price: 0,
+//     logo: 'string',
+//     brandId: 0,
+//     modelId: 0,
+//     styleId: 0,
+//     originId: 0,
+//     fuelId: 0,
+//     outsideColorId: 0,
+//     insideColorId: 0,
+//     cityId: 0,
+//     districtId: 0,
+//     wardId: 0,
+//     address: 'string'
+// });
 const districts = ref([]);
 const wards = ref([]);
 const getAllBrand = async () => {
