@@ -43,6 +43,7 @@ const description = ref();
 const fileArr = reactive([]);
 const src = ref(null);
 const brandList = ref([]);
+const models = ref([]);
 const fuelList = ref([]);
 const originList = ref([]);
 const styleList = ref([]);
@@ -150,7 +151,14 @@ const getWardByDistrict = async (districtCode) => {
         console.log(error);
     }
 };
-
+const getAllModel = async () => {
+    try {
+        const res = await axiosInstance.get(`/models?brandId=${52}`);
+        models.value = res.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
 const cityChange = () => {
     getDistrictByCity(province.value);
 };
@@ -164,6 +172,7 @@ onMounted(() => {
     getAllOrigin();
     getAllFuel();
     getAllColor();
+    getAllModel();
     countryService.getCountries().then((data) => (autoValue.value = data));
     nodeService.getTreeNodes().then((data) => (treeSelectNodes.value = data));
 });
@@ -173,32 +182,34 @@ const enableButton = computed(() => {
 
 const Submit = async () => {
     try {
+        console.log(name.value.name.split(' '));
+
         const res = await axiosInstance.post('/cars', {
-            ...carParam,
-            name: name.value,
+            // ...carParam,
+            name: name.value.name,
             description: description.value,
-            manufacturingYear: date.value,
-            seatCapacity: places.value,
-            status: statusCar.value,
-            transmission: driveSystem.value,
-            drivetrain: gear.value,
-            // images: ['string'],
-            slug: name.value.split(' ').join(',').lowerCase(),
+            manufacturingYear: parseInt(date.value),
+            seatCapacity: parseInt(places.value),
+            status: statusCar.value.code,
+            transmission: driveSystem.value.code,
+            drivetrain: gear.value.code,
+            images: ['string'],
+            slug: name.value.name.split(' ').join('-').toLowerCase(),
             version: version.value,
-            kmDriven: kmUsed.value,
-            price: price.value,
+            kmDriven: parseInt(kmUsed.value),
+            price: parseInt(price.value),
             logo: 'string',
             brandId: brand.value.id,
             modelId: name.value.id,
             styleId: shape.value.id,
             originId: origin.value.id,
             fuelId: fuelType.value.id,
-            outsideColorId: 0,
-            insideColorId: 0,
-            cityId: 0,
-            districtId: 0,
-            wardId: 0,
-            address: [address.value, ward.value, district.value, province.value].join(', ')
+            outsideColorId: exterior.value.id,
+            insideColorId: interior.value.id,
+            cityId: province.value.id,
+            districtId: district.value.id,
+            wardId: ward.value.id,
+            address: [address.value, ward.value.name, district.value.name, province.value.name].join(', ')
         });
         console.log(res);
     } catch (error) {
@@ -260,7 +271,7 @@ const uploadImg = async (element) => {
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Tên xe <b style="color: red">*</b></h5>
-                                    <Dropdown v-model="name" :options="dropdownValues" optionLabel="name" placeholder="Tên xe" />
+                                    <Dropdown v-model="name" :options="models" optionLabel="name" placeholder="Tên xe" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Năm sản xuất <b style="color: red">*</b></h5>

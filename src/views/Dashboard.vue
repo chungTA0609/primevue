@@ -58,10 +58,10 @@ const queryCar = async () => {
         // ...queryParams,
         // brandId: branchSearch.value,
         page: 0,
-        pageSize: 100,
+        pageSize: 10,
         sortItems: [
             {
-                field: 'brandId',
+                field: 'styleId',
                 desc: true
             }
         ]
