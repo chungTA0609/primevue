@@ -17,30 +17,24 @@ const provinces = ref([
     { name: 'TP. Hồ Chí Minh', code: 'HCM' }
 ]);
 
-const dropdownItem = ref(0);
-const gearItem = ref(0);
-const province = ref(0);
-const style = ref(0);
-const selectedNode = ref(0);
-const firstPrice = ref(0);
-const fuel = ref(0);
-const origin = ref(0);
-const lastPrice = ref(0);
-const pagination = ref(1);
+const dropdownItem = ref();
+const gearItem = ref();
+const province = ref();
+const style = ref();
+const selectedNode = ref();
+const firstPrice = ref();
+const fuel = ref();
+const origin = ref();
+const lastPrice = ref();
+const pagination = ref(0);
+const car = ref({ list: [] });
 const queryParams = reactive({
     // ...queryParams,
-    brandId: selectedNode.value,
-    originId: dropdownItem.value,
-    cityId: province.value,
-    styleId: gearItem.value,
-    fuelId: selectedNode.value,
-    minPrice: firstPrice.value,
-    maxPrice: lastPrice.value,
-    page: 1,
-    pageSize: 100,
+    page: 0,
+    pageSize: 10,
     sortItems: [
         {
-            field: 'brandId',
+            field: 'styleId',
             desc: true
         }
     ]
@@ -49,20 +43,25 @@ const brandList = ref([]);
 const fuelList = ref([]);
 const originList = ref([]);
 const styleList = ref([]);
-const queryCar = async () => {
-    queryParams.brandId = selectedNode.value;
-    queryParams.originId = dropdownItem.value;
-    queryParams.cityId = province.value;
-    queryParams.styleId = gearItem.value;
-    queryParams.fuelId = selectedNode.value;
-    queryParams.minPrice = firstPrice.value;
-    queryParams.maxPrice = lastPrice.value;
-    queryParams.page = pagination.value;
+const queryCar = async (type = null) => {
+    try {
+        queryParams.page = pagination.value;
 
-    const res = await axiosInstance.post('/cars/query', {
-        ...queryParams
-    });
-    console.log('res', res);
+        queryParams.brandId = selectedNode.value?.id;
+        queryParams.cityId = province.value;
+        queryParams.originId = origin.value?.id;
+        queryParams.styleId = style.value?.id;
+        queryParams.fuelId = fuel.value?.id;
+        console.log(queryParams);
+        if (type) queryParams.sortItems[0].field = type;
+
+        const res = await axiosInstance.post('/cars/query', {
+            ...queryParams
+        });
+        car.value = res.data.data;
+    } catch (error) {
+        console.log(error);
+    }
 };
 const getAllBrand = async () => {
     try {
@@ -141,7 +140,8 @@ onMounted(() => {
     queryCar();
 });
 watch(pagination, (val) => {
-    queryParams.page = val / 10 + 1;
+    queryParams.page = val / 10;
+    console.log(val);
 
     queryCar();
 });
@@ -155,15 +155,15 @@ watch(pagination, (val) => {
                 <div class="p-fluid formgrid grid">
                     <div class="field col-12 md:col-4">
                         <label for="name1">Hãng xe</label>
-                        <Dropdown @change="queryCar" id="state" v-model="selectedNode" :options="brandList" optionLabel="name" placeholder="Chọn tình hãng xe"></Dropdown>
+                        <Dropdown @change="queryCar('brandId')" id="state" v-model="selectedNode" :options="brandList" optionLabel="name" placeholder="Chọn tình hãng xe"></Dropdown>
                     </div>
                     <div class="field col-12 md:col-4">
                         <label for="state">Tình trạng xe</label>
-                        <Dropdown @change="queryCar" id="state" v-model="dropdownItem" :options="dropdownItems" optionLabel="name" placeholder="Chọn tình trạng xe"></Dropdown>
+                        <Dropdown @change="queryCar(null)" id="state" v-model="dropdownItem" :options="dropdownItems" optionLabel="name" placeholder="Chọn tình trạng xe"></Dropdown>
                     </div>
                     <div class="field col-12 md:col-4">
                         <label for="province">Tỉnh thành</label>
-                        <Dropdown @change="queryCar" id="province" v-model="province" :options="provinces" optionLabel="name" placeholder="Chọn tỉnh thành"> </Dropdown>
+                        <Dropdown @change="queryCar('cityId')" id="province" v-model="province" :options="provinces" optionLabel="name" placeholder="Chọn tỉnh thành"> </Dropdown>
                     </div>
                     <div class="field col-12 md:col-6">
                         <label for="gear">Hộp số</label>
@@ -172,26 +172,26 @@ watch(pagination, (val) => {
                     <div class="field col-12 md:col-6">
                         <label for="price">Khoảng giá</label>
                         <div class="price-display">
-                            <InputNumber @update:modelValue="queryCar" class="price" v-model="firstPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
+                            <InputNumber @update:modelValue="queryCar('minPrice')" class="price" v-model="firstPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
                             <p style="margin-top: 5px">-</p>
-                            <InputNumber @update:modelValue="queryCar" class="price" v-model="lastPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
+                            <InputNumber @update:modelValue="queryCar('maxPrice')" class="price" v-model="lastPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
                         </div>
                     </div>
                     <div class="field col-12 md:col-4">
                         <label for="fuel">Nhiên liệu</label>
-                        <Dropdown @change="queryCar" id="fuel" v-model="fuel" :options="fuelList" optionLabel="name" placeholder="Chọn loại nhiên liệu"></Dropdown>
+                        <Dropdown @change="queryCar('fuelId')" id="fuel" v-model="fuel" :options="fuelList" optionLabel="name" placeholder="Chọn loại nhiên liệu"></Dropdown>
                     </div>
                     <div class="field col-12 md:col-4">
                         <label for="origin">Xuất xứ</label>
-                        <Dropdown @change="queryCar" id="origin" v-model="origin" :options="originList" optionLabel="name" placeholder="Chọn nơi xuất xứ"></Dropdown>
+                        <Dropdown @change="queryCar('originId')" id="origin" v-model="origin" :options="originList" optionLabel="name" placeholder="Chọn nơi xuất xứ"></Dropdown>
                     </div>
                     <div class="field col-12 md:col-4">
                         <label for="color">Màu xe</label>
-                        <Dropdown @change="queryCar" id="color" v-model="color" :options="provinces" optionLabel="name" placeholder="Chọn màu xe"> </Dropdown>
+                        <Dropdown @change="queryCar('outsideColorId')" id="color" v-model="color" :options="provinces" optionLabel="name" placeholder="Chọn màu xe"> </Dropdown>
                     </div>
                     <div class="field col-12 md:col-4">
                         <label for="style">Kiểu dáng</label>
-                        <Dropdown @change="queryCar" id="style" v-model="style" :options="styleList" optionLabel="name" placeholder="Chọn tình hãng xe"></Dropdown>
+                        <Dropdown @change="queryCar('styleId')" id="style" v-model="style" :options="styleList" optionLabel="name" placeholder="Chọn tình hãng xe"></Dropdown>
                     </div>
                     <div class="field col-12 md:col-4">
                         <label for="place">Số chỗ ngồi</label>
@@ -206,19 +206,10 @@ watch(pagination, (val) => {
         </div>
 
         <div class="col-12">
-            <div class="card">
-                <Paginator v-model:first="pagination" :rows="10" :totalRecords="120"></Paginator>
-                <div class="col-12 car-comp">
-                    <CarInfoComp></CarInfoComp>
-                </div>
-                <div class="col-12 car-comp">
-                    <CarInfoComp></CarInfoComp>
-                </div>
-                <div class="col-12 car-comp">
-                    <CarInfoComp></CarInfoComp>
-                </div>
-                <div class="col-12 car-comp">
-                    <CarInfoComp></CarInfoComp>
+            <div class="card" v-if="car.list.length">
+                <Paginator v-model:first="pagination" :rows="10" :totalRecords="car.list.length"></Paginator>
+                <div class="col-12 car-comp" v-for="(carEl, index) in car.list" :key="index">
+                    <CarInfoComp :dataCar="carEl"></CarInfoComp>
                 </div>
             </div>
         </div>

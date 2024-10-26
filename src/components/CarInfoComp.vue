@@ -1,16 +1,21 @@
 <script setup>
+import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-// const props = defineProps({
-//     title: {
-//         type: String,
-//         defaul: null
-//     }
-// });
-const gotoDetail = () => {
-    router.push('/detail/1');
+const props = defineProps({
+    dataCar: {
+        type: Object,
+        defaul: null
+    }
+});
+
+onMounted(() => {
+    console.log(props.dataCar);
+});
+const gotoDetail = (slug) => {
+    router.push(`/detail/${slug}`);
 };
 </script>
 <template>
@@ -18,27 +23,31 @@ const gotoDetail = () => {
         <div class="card" style="display: flex; padding: 2px">
             <div class="col-2">
                 <div class="first-col">
-                    <p><b>2017 - Xe cũ</b></p>
-                    <img alt="logo" src="/demo/images/logo.svg" style="width: 80px; max-height: 80px" />
+                    <p>
+                        <b>{{ dataCar.manufacturingYear }} - Xe {{ dataCar?.status === 'OLD' ? 'cũ' : 'mới' }} </b>
+                    </p>
+                    <img alt="logo" :src="dataCar?.logo" style="width: 80px; max-height: 80px" />
                     <p style="margin-top: 12px">Mã: 678910JQKA</p>
                 </div>
             </div>
             <div class="col-7">
-                <div class="des-title" @click="gotoDetail"><p>Xe Ford Focus S 2.0 AT 2013</p></div>
+                <div class="des-title" @click="gotoDetail(dataCar?.slug)">
+                    <p>{{ dataCar?.name }}</p>
+                </div>
                 <div class="description">
-                    <p class="first-des">*Xe lắp ráp trong nước, màu đen, máy xăng 2.0 L, số tự động, 7 chỗ , đã đi 74,000 km ...</p>
-                    <p class="second-des">Em bán Outlander bản 2.0 CVT Sản xuất 2022 Odo lăn bánh 74.000km Bảo dưỡng Full lịch sử Hãng Cam kết xe không tai nạn ảnh hưởng vận hành xe, không ngập nước, thuỷ ...</p>
+                    <p class="first-des">{{ props.dataCar?.description }}</p>
+                    <!-- <p class="second-des">Em bán Outlander bản 2.0 CVT Sản xuất 2022 Odo lăn bánh 74.000km Bảo dưỡng Full lịch sử Hãng Cam kết xe không tai nạn ảnh hưởng vận hành xe, không ngập nước, thuỷ ...</p> -->
                 </div>
             </div>
             <div class="col-3">
                 <div class="title-info">
-                    <div class="price">155 triệu</div>
-                    <div class="province">Piltover</div>
+                    <div class="price">Giá: {{ dataCar?.price.toLocaleString('en-US') }}</div>
+                    <div class="province">{{ dataCar?.city?.name }}</div>
                 </div>
                 <div class="contact-info">
                     <div class="address">
                         <div class="name">Liên hệ: <b>Lê Trọng Đứk</b></div>
-                        <div class="place">Thanh Xuyên, Hoàng Long, Phú Xuyên, Hà Nội</div>
+                        <div class="place">{{ props.dataCar?.address }}</div>
                     </div>
                     <div class="phone-number">ĐT: 0909 799 678 - 0909 799 676</div>
                     <slot></slot>

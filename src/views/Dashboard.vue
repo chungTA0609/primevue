@@ -44,6 +44,7 @@ const listButton = ref([
 const lineOptions = ref(null);
 const productService = new ProductService();
 const branchSearch = ref('');
+const car = ref([]);
 const setBranch = (branch) => {
     console.log(branch);
 
@@ -52,11 +53,11 @@ const setBranch = (branch) => {
     if (branch === 'Tất cả các hãng') router.push('/mua-xe');
     queryCar();
 };
-const queryCar = () => {
-    axiosInstance.post('/cars/query', {
+const queryCar = async () => {
+    const res = await axiosInstance.post('/cars/query', {
         // ...queryParams,
-        brandId: branchSearch.value,
-        page: 1,
+        // brandId: branchSearch.value,
+        page: 0,
         pageSize: 100,
         sortItems: [
             {
@@ -65,19 +66,11 @@ const queryCar = () => {
             }
         ]
     });
+    car.value = res.data.data;
 };
 onMounted(() => {
     productService.getProductsSmall().then((data) => (products.value = data));
-    axiosInstance.post('/cars/query', {
-        page: 1,
-        pageSize: 100,
-        sortItems: [
-            {
-                field: 'styleId',
-                desc: true
-            }
-        ]
-    });
+    queryCar();
 });
 
 const applyLightTheme = () => {
@@ -196,17 +189,8 @@ watch(
             <div class="right-part"><h9 style="float: right">Tổng: 12345</h9></div>
         </div>
         <hr />
-        <div class="col-12 car-comp">
-            <CarInfoComp></CarInfoComp>
-        </div>
-        <div class="col-12 car-comp">
-            <CarInfoComp></CarInfoComp>
-        </div>
-        <div class="col-12 car-comp">
-            <CarInfoComp></CarInfoComp>
-        </div>
-        <div class="col-12 car-comp">
-            <CarInfoComp></CarInfoComp>
+        <div class="col-12 car-comp" v-for="(carEl, index) in car.list" :key="index">
+            <CarInfoComp :dataCar="carEl"></CarInfoComp>
         </div>
     </div>
 </template>
