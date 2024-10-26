@@ -41,7 +41,7 @@ const dateExpired = ref(null);
 
 const countryService = new CountryService();
 const nodeService = new NodeService();
-const listSellCar = reactive([1, 2]);
+const listSellCar = reactive([]);
 const fileArr = reactive([]);
 onMounted(() => {
     countryService.getCountries().then((data) => (autoValue.value = data));
