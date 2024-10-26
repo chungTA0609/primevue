@@ -4,26 +4,28 @@ import { CountryService } from '@/service/CountryService';
 import { NodeService } from '@/service/NodeService';
 import { useToast } from 'primevue/usetoast';
 import axios from 'axios';
+import axiosInstance from '../../service/axiosInstance';
 
 const toast = useToast();
 const autoValue = ref(null);
 const dropdownValues = ref([
-    { name: 'New York', code: 'NY' },
-    { name: 'Rome', code: 'RM' },
-    { name: 'London', code: 'LDN' },
-    { name: 'Istanbul', code: 'IST' },
-    { name: 'Paris', code: 'PRS' }
+    { name: 'Xe cũ', code: 'OLD' },
+    { name: 'Xe mới', code: 'NEW' }
+]);
+const gearValues = ref([
+    { name: 'Số sàn', code: 'OLD' },
+    { name: 'Số tự động', code: 'NEW' }
 ]);
 const brand = ref(dropdownValues.value[0]);
-const name = ref(dropdownValues.value[0]);
-const date = ref(dropdownValues.value[0]);
+const name = ref();
+const date = ref();
 const version = ref(null);
-const shape = ref(dropdownValues.value[0]);
-const origin = ref(dropdownValues.value[0]);
+const shape = ref();
+const origin = ref();
 const kmUsed = ref(null);
-const statusCar = ref(dropdownValues.value[0]);
-const gear = ref(dropdownValues.value[0]);
-const fuelType = ref(dropdownValues.value[0]);
+const statusCar = ref();
+const gear = ref();
+const fuelType = ref();
 const treeSelectNodes = ref(null);
 const price = ref(null);
 const interior = ref(null);
@@ -33,10 +35,135 @@ const driveSystem = ref(null);
 const countryService = new CountryService();
 const nodeService = new NodeService();
 const fileupload = ref();
+const province = ref();
+const district = ref();
+const address = ref();
+const ward = ref();
+const description = ref();
 const fileArr = reactive([]);
 const src = ref(null);
+const brandList = ref([]);
+const fuelList = ref([]);
+const originList = ref([]);
+const styleList = ref([]);
+const colorList = ref([]);
+const provinces = ref([
+    { name: 'Toàn quốc', code: 'all' },
+    { name: 'Hà Nội', code: 'HNI' },
+    { name: 'TP. Hồ Chí Minh', code: 'HCM' }
+]);
+const carParam = ref({
+    name: 'string',
+    description: 'string',
+    manufacturingYear: 0,
+    seatCapacity: 1,
+    status: 'string',
+    transmission: 'string',
+    drivetrain: 'string',
+    images: ['string'],
+    slug: 'string',
+    version: 'string',
+    kmDriven: 0,
+    price: 0,
+    logo: 'string',
+    brandId: 0,
+    modelId: 0,
+    styleId: 0,
+    originId: 0,
+    fuelId: 0,
+    outsideColorId: 0,
+    insideColorId: 0,
+    cityId: 0,
+    districtId: 0,
+    wardId: 0,
+    address: 'string'
+});
+const districts = ref([]);
+const wards = ref([]);
+const getAllBrand = async () => {
+    try {
+        const res = await axiosInstance.get('/brands');
+        brandList.value = res.data.data.map((element) => {
+            console.log(element);
+            return element;
+        });
+        console.log(brandList.value);
+    } catch (error) {
+        console.log(error);
+    }
+};
+const getAllFuel = async () => {
+    try {
+        const res = await axiosInstance.get('/fuels');
+        fuelList.value = res.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+const getAllCities = async () => {
+    try {
+        const res = await axiosInstance.get('/address/cities');
+        provinces.value = res.data.data;
+        console.log(brandList.value);
+    } catch (error) {
+        console.log(error);
+    }
+};
+const getAllOrigin = async () => {
+    try {
+        const res = await axiosInstance.get('/origins');
+        originList.value = res.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+const getAllStyle = async () => {
+    try {
+        const res = await axiosInstance.get('/styles');
+        styleList.value = res.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+const getAllColor = async () => {
+    try {
+        const res = await axiosInstance.get('/colors');
+        colorList.value = res.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
 
+const getDistrictByCity = async (cityCode) => {
+    try {
+        const res = await axiosInstance.get(`/address/districts?cityCode=${cityCode.code}`);
+        districts.value = res.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+const getWardByDistrict = async (districtCode) => {
+    try {
+        const res = await axiosInstance.get(`/address/wards?districtCode=${districtCode.code}`);
+        wards.value = res.data.data;
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const cityChange = () => {
+    getDistrictByCity(province.value);
+};
+const districtChange = () => {
+    getWardByDistrict(district.value);
+};
 onMounted(() => {
+    getAllBrand();
+    getAllCities();
+    getAllStyle();
+    getAllOrigin();
+    getAllFuel();
+    getAllColor();
     countryService.getCountries().then((data) => (autoValue.value = data));
     nodeService.getTreeNodes().then((data) => (treeSelectNodes.value = data));
 });
@@ -44,6 +171,40 @@ const enableButton = computed(() => {
     return !!brand.value && !!name.value && !!date.value && !!shape.value && !!origin.value && !!statusCar.value && !!price.value;
 });
 
+const Submit = async () => {
+    try {
+        const res = await axiosInstance.post('/cars', {
+            ...carParam,
+            name: name.value,
+            description: description.value,
+            manufacturingYear: date.value,
+            seatCapacity: places.value,
+            status: statusCar.value,
+            transmission: driveSystem.value,
+            drivetrain: gear.value,
+            // images: ['string'],
+            slug: name.value.split(' ').join(',').lowerCase(),
+            version: version.value,
+            kmDriven: kmUsed.value,
+            price: price.value,
+            logo: 'string',
+            brandId: brand.value.id,
+            modelId: name.value.id,
+            styleId: shape.value.id,
+            originId: origin.value.id,
+            fuelId: fuelType.value.id,
+            outsideColorId: 0,
+            insideColorId: 0,
+            cityId: 0,
+            districtId: 0,
+            wardId: 0,
+            address: [address.value, ward.value, district.value, province.value].join(', ')
+        });
+        console.log(res);
+    } catch (error) {
+        console.log(error);
+    }
+};
 const onUpload = async (event) => {
     const imgArr = event.files;
     imgArr.forEach((element) => {
@@ -95,7 +256,7 @@ const uploadImg = async (element) => {
                             <div class="grid formgrid mt-4">
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Hãng sản xuất <b style="color: red">*</b></h5>
-                                    <Dropdown :invalid="!brand" v-model="brand" :options="dropdownValues" optionLabel="name" placeholder="Hãng" />
+                                    <Dropdown :invalid="!brand" v-model="brand" :options="brandList" optionLabel="name" placeholder="Hãng" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Tên xe <b style="color: red">*</b></h5>
@@ -103,7 +264,7 @@ const uploadImg = async (element) => {
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Năm sản xuất <b style="color: red">*</b></h5>
-                                    <Dropdown v-model="date" :options="dropdownValues" optionLabel="name" placeholder="Năm" />
+                                    <InputText v-model="date" :options="dropdownValues" optionLabel="name" placeholder="Năm" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Phiên bản</h5>
@@ -111,11 +272,11 @@ const uploadImg = async (element) => {
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Kiểu dáng <b style="color: red">*</b></h5>
-                                    <Dropdown v-model="shape" :options="dropdownValues" optionLabel="name" placeholder="Kiểu dáng" />
+                                    <Dropdown v-model="shape" :options="styleList" optionLabel="name" placeholder="Kiểu dáng" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Xuất xứ <b style="color: red">*</b></h5>
-                                    <Dropdown v-model="origin" :options="dropdownValues" optionLabel="name" placeholder="Xuất xứ" />
+                                    <Dropdown v-model="origin" :options="originList" optionLabel="name" placeholder="Xuất xứ" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Tình trạng <b style="color: red">*</b></h5>
@@ -127,11 +288,11 @@ const uploadImg = async (element) => {
                                 </div>
                                 <div class="col-12 mb-4 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Hộp số</h5>
-                                    <Dropdown v-model="gear" :options="dropdownValues" optionLabel="name" placeholder="Hộp số" />
+                                    <Dropdown v-model="gear" :options="gearValues" optionLabel="name" placeholder="Hộp số" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Nhiên liệu</h5>
-                                    <Dropdown v-model="fuelType" :options="dropdownValues" optionLabel="name" placeholder="Loại nhiên liệu" />
+                                    <Dropdown v-model="fuelType" :options="fuelList" optionLabel="name" placeholder="Loại nhiên liệu" />
                                 </div>
                             </div>
                         </div>
@@ -139,7 +300,7 @@ const uploadImg = async (element) => {
 
                     <div class="col-12 md:col-6">
                         <div class="card mt-4">
-                            <h5>Thông số kĩ thuật của xe</h5>
+                            <h5>Giá bán và thông tin bổ sung</h5>
 
                             <div class="grid formgrid mt-4">
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
@@ -148,11 +309,11 @@ const uploadImg = async (element) => {
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Ngoại thất</h5>
-                                    <Dropdown v-model="exterior" :options="dropdownValues" optionLabel="name" />
+                                    <Dropdown v-model="exterior" :options="colorList" optionLabel="name" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Nội thất</h5>
-                                    <Dropdown v-model="interior" :options="dropdownValues" optionLabel="name" />
+                                    <Dropdown v-model="interior" :options="colorList" optionLabel="name" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Số chỗ ngồi</h5>
@@ -172,6 +333,7 @@ const uploadImg = async (element) => {
                                     <Textarea
                                         id="address"
                                         rows="8"
+                                        v-model="description"
                                         placeholder="Hãy nhập thông tin mô tả tóm tắt xe của bạn
 Lưu ý:
 	- Nhập tiếng việt có dấu
@@ -209,13 +371,27 @@ Lưu ý:
                             <div class="form-contact" style="display: flex">
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Địa chỉ:</h5>
-                                    <InputText placeholder="Địa chỉ chi tiết" />
+                                    <div style="display: flex">
+                                        <div class="col-12 lg:col-4 lg:mb-2 mt-2" style="padding-left: 0; margin-right: 1rem">
+                                            <h5>Thành phố</h5>
+                                            <Dropdown v-model="province" @change="cityChange" :options="provinces" optionLabel="name" placeholder="Tỉnh/Thành phố" />
+                                        </div>
+                                        <div class="col-12 lg:col-4 lg:mb-2 mt-2">
+                                            <h5>Quận/Huyện</h5>
+                                            <Dropdown v-model="district" @change="districtChange" :options="districts" optionLabel="name" placeholder="Quận/Huyện" :disabled="!province" />
+                                        </div>
+                                        <div class="col-12 lg:col-4 lg:mb-2 mt-2">
+                                            <h5>Phường/Xã</h5>
+                                            <Dropdown v-model="ward" :options="wards" optionLabel="name" :disabled="!district" placeholder="Phường/Xã" />
+                                        </div>
+                                    </div>
+                                    <InputText placeholder="Địa chỉ chi tiết" v-model="address" />
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-12 md:col-12 flex" style="justify-content: end">
-                        <Button label="Đăng tin" style="width: 120px" :disabled="!enableButton"></Button>
+                        <Button label="Đăng tin" @click="Submit" style="width: 120px" :disabled="!enableButton"></Button>
                     </div>
                 </div>
             </div>
