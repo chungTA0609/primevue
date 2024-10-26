@@ -10,9 +10,9 @@ onMounted(() => {
 const productService = new ProductService();
 const dt = ref();
 const products = ref();
-const models = ref();
-const modelDialog = ref(false);
-const deleteModelDialog = ref(false);
+const brands = ref();
+const brandDialog = ref(false);
+const deleteBrandDialog = ref(false);
 const product = ref({});
 const img = ref(null);
 const filters = ref({
@@ -23,15 +23,14 @@ const submitted = ref(false);
 const openNew = () => {
     product.value = {};
     submitted.value = false;
-    modelDialog.value = true;
+    brandDialog.value = true;
 };
 const hideDialog = () => {
-    modelDialog.value = false;
+    brandDialog.value = false;
     submitted.value = false;
 };
 const saveProduct = async () => {
     submitted.value = true;
-    console.log(img.value);
 
     if (product?.value.name?.trim()) {
         try {
@@ -39,15 +38,17 @@ const saveProduct = async () => {
             // product.value.logo = res.data.data ?? '';
             product.value.logo = '';
             if (product.value.id) {
+                console.log(product.value.hex);
+
                 products.value[findIndexById(product.value.id)] = product.value;
-                await axiosInstance.put(`/models/${product.value.id}`, product.value);
+                await axiosInstance.put(`/colors/${product.value.id}`, { ...product.value, hex: product.value.hex.includes('#') ? product.value.hex : '#' + product.value.hex });
             } else {
                 products.value.push(product.value);
-                await axiosInstance.post(`/models`, product.value);
+                await axiosInstance.post(`/colors`, { ...product.value, hex: product.value.hex.includes('#') ? product.value.hex : '#' + product.value.hex });
             }
-            modelDialog.value = false;
+            brandDialog.value = false;
             product.value = {};
-            getAllModel();
+            getAllBrand();
         } catch (error) {
             console.log(error);
         }
@@ -57,21 +58,19 @@ const editProduct = (prod) => {
     console.log(prod);
 
     product.value = { ...prod };
-    modelDialog.value = true;
+    brandDialog.value = true;
 };
 const confirmDeleteProduct = (prod) => {
     product.value = prod;
-    deleteModelDialog.value = true;
+    deleteBrandDialog.value = true;
 };
 const deleteProduct = async (product) => {
     try {
-        console.log(product);
-
-        await axiosInstance.delete(`/models/${product.id}`);
-        deleteModelDialog.value = false;
-        getAllModel();
+        await axiosInstance.delete(`/colors/${product.id}`);
+        deleteBrandDialog.value = false;
+        getAllBrand();
     } catch (error) {
-        deleteModelDialog.value = false;
+        deleteBrandDialog.value = false;
     }
 };
 const findIndexById = (id) => {
@@ -87,12 +86,12 @@ const findIndexById = (id) => {
 };
 
 onMounted(() => {
-    getAllModel();
+    getAllBrand();
 });
-const getAllModel = async () => {
+const getAllBrand = async () => {
     try {
-        const res = await axiosInstance.get('/models', 11);
-        models.value = res.data.data;
+        const res = await axiosInstance.get('/colors');
+        brands.value = res.data.data;
     } catch (error) {
         console.log(error);
     }
@@ -102,10 +101,10 @@ const getAllModel = async () => {
     <div class="mt-3">
         <div class="setting-container">
             <div class="card">
-                <DataTable ref="dt" selectionMode="single" :value="models" dataKey="id" :rows="10" paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown">
+                <DataTable ref="dt" selectionMode="single" :value="brands" dataKey="id" :rows="10" paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown">
                     <template #header>
                         <div class="flex flex-wrap gap-2 items-center justify-between" style="justify-content: space-between">
-                            <h4 class="m-0">Quản lý mẫu xe</h4>
+                            <h4 class="m-0">Quản lý màu xe</h4>
                             <IconField>
                                 <InputIcon>
                                     <i class="pi pi-search" />
@@ -116,11 +115,11 @@ const getAllModel = async () => {
                         <Button label="Thêm mới" icon="pi pi-plus" @click="openNew" />
                     </template>
 
-                    <Column field="name" :header="'Tên mẫu xe'" sortable style="min-width: 30rem"></Column>
-                    <Column field="brandId" :header="'Tên hãng xe'" sortable style="min-width: 30rem"></Column>
-                    <Column :header="'Logo '">
+                    <Column field="name" :header="'Tên màu xe'" style="min-width: 30rem"></Column>
+                    <Column :header="'Màu xe'" style="min-width: 30rem">
                         <template #body="slotProps">
-                            <img :src="slotProps.data.logo" :alt="slotProps.data.logo" class="rounded" style="width: 100px; height: 100px" />
+                            <!-- {{ slotProps.data }} -->
+                            <div :style="`width: 24px; height: 24px;border:1px solid #000;background: ${slotProps.data.hex}`"></div>
                         </template>
                     </Column>
                     <Column :exportable="false">
@@ -133,12 +132,16 @@ const getAllModel = async () => {
                 </DataTable>
             </div>
 
-            <Dialog v-model:visible="modelDialog" :style="{ width: '450px' }" :header="'Thông tin mẫu xe'" :modal="true">
+            <Dialog v-model:visible="brandDialog" :style="{ width: '450px' }" :header="'Màu xe'" :modal="true">
                 <div>
                     <div class="mt-3">
                         <label for="name" class="block font-bold mb-2">Tên</label>
                         <InputText id="name" v-model.trim="product.name" required="true" autofocus :invalid="submitted && !product.name" fluid />
-                        <div v-if="submitted && !product.name" class="text-red-500">Hãy nhập tên mẫu xe.</div>
+                        <div v-if="submitted && !product.name" class="text-red-500">Hãy nhập tên màu.</div>
+                    </div>
+                    <div class="mt-3">
+                        <label for="name" class="block font-bold mb-2">Chọn màu xe</label>
+                        <ColorPicker v-model="product.hex" />
                     </div>
                 </div>
 
@@ -148,7 +151,7 @@ const getAllModel = async () => {
                 </template>
             </Dialog>
 
-            <Dialog v-model:visible="deleteModelDialog" :style="{ width: '450px' }" header="Xác nhận" :modal="true">
+            <Dialog v-model:visible="deleteBrandDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
                 <div class="flex items-center gap-4">
                     <i class="pi pi-exclamation-triangle !text-3xl" />
                     <span v-if="product"
@@ -157,7 +160,7 @@ const getAllModel = async () => {
                     >
                 </div>
                 <template #footer>
-                    <Button label="Không" icon="pi pi-times" text @click="deleteModelDialog = false" />
+                    <Button label="Không" icon="pi pi-times" text @click="deleteBrandDialog = false" />
                     <Button label="Có" icon="pi pi-check" @click="deleteProduct(product)" />
                 </template>
             </Dialog>

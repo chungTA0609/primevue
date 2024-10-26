@@ -31,6 +31,10 @@ const model = ref([
                     {
                         label: 'Quản lý loại nhiên liệu',
                         to: '/fuel-car'
+                    },
+                    {
+                        label: 'Quản lý màu xe',
+                        to: '/color-car'
                     }
                 ]
             }

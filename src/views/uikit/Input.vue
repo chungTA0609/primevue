@@ -48,6 +48,7 @@ const fuelList = ref([]);
 const originList = ref([]);
 const styleList = ref([]);
 const colorList = ref([]);
+const imgList = ref([]);
 const provinces = ref([
     { name: 'Toàn quốc', code: 'all' },
     { name: 'Hà Nội', code: 'HNI' },
@@ -85,10 +86,8 @@ const getAllBrand = async () => {
     try {
         const res = await axiosInstance.get('/brands');
         brandList.value = res.data.data.map((element) => {
-            console.log(element);
             return element;
         });
-        console.log(brandList.value);
     } catch (error) {
         console.log(error);
     }
@@ -182,8 +181,24 @@ const enableButton = computed(() => {
 
 const Submit = async () => {
     try {
-        console.log(name.value.name.split(' '));
+        await upLoadProcess();
+        pushCar();
+    } catch (error) {
+        console.log(error);
+    }
+};
+const onUpload = async (event) => {
+    fileArr.value = event.files;
+    imgList.value = [];
+};
 
+const upLoadProcess = async () => {
+    for (const element of fileArr.value) {
+        await uploadImg(element);
+    }
+};
+const pushCar = async () => {
+    try {
         const res = await axiosInstance.post('/cars', {
             // ...carParam,
             name: name.value.name,
@@ -193,12 +208,12 @@ const Submit = async () => {
             status: statusCar.value.code,
             transmission: driveSystem.value.code,
             drivetrain: gear.value.code,
-            images: ['string'],
-            slug: name.value.name.split(' ').join('-').toLowerCase(),
+            images: imgList.value,
+            slug: (name.value.name + ' ' + version.value + ' ' + Date.now()).split(' ').join('-').toLowerCase(),
             version: version.value,
             kmDriven: parseInt(kmUsed.value),
-            price: parseInt(price.value),
-            logo: 'string',
+            price: parseInt(price.value) * 1000000,
+            logo: imgList.value[0],
             brandId: brand.value.id,
             modelId: name.value.id,
             styleId: shape.value.id,
@@ -216,28 +231,16 @@ const Submit = async () => {
         console.log(error);
     }
 };
-const onUpload = async (event) => {
-    const imgArr = event.files;
-    imgArr.forEach((element) => {
-        uploadImg(element);
-    });
-
-    const file = event.files[0];
-    const reader = new FileReader();
-
-    reader.onload = async (e) => {
-        src.value = e.target.result;
-    };
-
-    reader.readAsDataURL(file);
-
-    toast.add({ severity: 'info', summary: 'Success', detail: 'File Uploaded', life: 3000 });
-};
-
 const uploadImg = async (element) => {
     try {
-        const res = await axios.post('https://33b9-171-241-32-111.ngrok-free.app/api/files/upload', element);
-        console.log(res);
+        const formData = new FormData();
+        formData.append('file', element);
+        const res = await axiosInstance.post('/files/upload', formData, {
+            headers: {
+                Accept: undefined
+            }
+        });
+        imgList.value.push(res.data.data);
     } catch (error) {
         console.log(error);
     }
@@ -316,7 +319,7 @@ const uploadImg = async (element) => {
                             <div class="grid formgrid mt-4">
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Giá <b style="color: red">*</b></h5>
-                                    <InputNumber class="price" v-model="price" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid placeholder="đồng" />
+                                    <InputNumber class="price" v-model="price" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid placeholder="Triệu đồng" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Ngoại thất</h5>
@@ -359,7 +362,7 @@ Lưu ý:
                     <div class="col-12 md:col-12">
                         <div class="card mt-4">
                             <h5>Đăng ảnh cho xe (ít nhất 5 ảnh tương ứng 5 góc chụp khác nhau nếu có)</h5>
-                            <FileUpload v-model="fileArr" ref="fileupload" url="https://33b9-171-241-32-111.ngrok-free.app/api/files/upload" name="demo[]" @uploader="onUpload" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload />
+                            <FileUpload v-model="fileArr" ref="fileupload" name="demo[]" @select="onUpload" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload />
                         </div>
                     </div>
                     <div class="col-12 md:col-12">

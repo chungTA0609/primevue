@@ -58,7 +58,7 @@ const queryCar = async () => {
         // ...queryParams,
         // brandId: branchSearch.value,
         page: 0,
-        pageSize: 10,
+        pageSize: 100,
         sortItems: [
             {
                 field: 'styleId',

@@ -97,7 +97,7 @@ const uploadImg = async (element) => {
         formData.append('file', element);
         console.log(element);
 
-        return await axios.post('https://33b9-171-241-32-111.ngrok-free.app/api/files/upload', formData, {
+        return await axiosInstance.post('/files/upload', formData, {
             headers: {
                 Accept: undefined
             }
@@ -176,7 +176,7 @@ const getAllBrand = async () => {
                     <div class="mt-3">
                         <label for="name" class="block font-bold mb-2">Tên</label>
                         <InputText id="name" v-model.trim="product.name" required="true" autofocus :invalid="submitted && !product.name" fluid />
-                        <small v-if="submitted && !product.name" class="text-red-500">Hãy nhập mã hãng.</small>
+                        <div v-if="submitted && !product.name" class="text-red-500">Hãy nhập mã hãng.</div>
                     </div>
                     <div class="mt-3">
                         <label for="inventoryStatus" class="block font-bold mb-3">Logo </label>

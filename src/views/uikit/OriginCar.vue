@@ -128,7 +128,7 @@ const getAllOrigin = async () => {
                     <div class="mt-3">
                         <label for="name" class="block font-bold mb-2">Tên</label>
                         <InputText id="name" v-model.trim="product.name" required="true" autofocus :invalid="submitted && !product.name" fluid />
-                        <small v-if="submitted && !product.name" class="text-red-500">Hãy nhập tên mẫu xe.</small>
+                        <div v-if="submitted && !product.name" class="text-red-500">Hãy nhập tên mẫu xe.</div>
                     </div>
                 </div>
 
