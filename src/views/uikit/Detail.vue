@@ -7,7 +7,9 @@ import { NodeService } from '@/service/NodeService';
 import { PhotoService } from '@/service/PhotoService';
 import { useRoute } from 'vue-router';
 import axiosInstance from '../../service/axiosInstance';
+import { useToast } from 'primevue/usetoast';
 
+const toast = useToast();
 const route = useRoute();
 const autoValue = ref(null);
 const images = ref([]);
@@ -40,6 +42,7 @@ const getDataBySlug = async () => {
         dataDetail.value = res.data.data;
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 onMounted(() => {
@@ -50,6 +53,8 @@ onMounted(() => {
 });
 </script>
 <template>
+    <Toast />
+
     <div class="grid p-fluid">
         <div class="col-12 md:col-12">
             <div class="card" v-if="dataDetail">

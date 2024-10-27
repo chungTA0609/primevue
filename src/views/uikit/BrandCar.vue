@@ -55,6 +55,7 @@ const saveProduct = async () => {
             getAllBrand();
         } catch (error) {
             console.log(error);
+            toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
         }
     }
 };
@@ -104,6 +105,7 @@ const uploadImg = async (element) => {
         });
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 
@@ -129,10 +131,13 @@ const getAllBrand = async () => {
         brands.value = res.data.data;
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 </script>
 <template>
+    <Toast />
+
     <div class="mt-3">
         <div class="setting-container">
             <div class="card">

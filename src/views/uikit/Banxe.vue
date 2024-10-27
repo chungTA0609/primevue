@@ -62,7 +62,7 @@ const confirm = (event) => {
             dateExpired.value = null;
         },
         reject: () => {
-            toast.add({ severity: 'info', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+            toast.add({ severity: 'info', summary: 'Lỗi', detail: 'You have rejected', life: 3000 });
         }
     });
 };

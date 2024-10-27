@@ -8,7 +8,9 @@ import * as yup from 'yup'; // For schema-based validation
 import { toTypedSchema } from '@vee-validate/yup';
 import { useRouter } from 'vue-router';
 import axiosInstance from '../../../service/axiosInstance';
+import { useToast } from 'primevue/usetoast';
 
+const toast = useToast();
 const router = useRouter();
 const { layoutConfig } = useLayout();
 const { errors, defineField, handleSubmit } = useForm({
@@ -49,6 +51,7 @@ const onSubmit = handleSubmit(async (values) => {
         router.push('/auth/login');
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 });
 const logoUrl = computed(() => {
@@ -61,6 +64,8 @@ const disableSubmit = computed(() => {
 </script>
 
 <template>
+    <Toast />
+
     <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
         <div class="flex flex-column align-items-center justify-content-center">
             <img :src="logoUrl" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" @click="router.push('/')" />

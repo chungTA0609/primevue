@@ -3,6 +3,9 @@ import { ref, onMounted } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { ProductService } from '@/service/ProductService';
 import axiosInstance from '../../service/axiosInstance';
+import { useToast } from 'primevue/usetoast';
+
+const toast = useToast();
 onMounted(() => {
     productService.getProductss().then((data) => (products.value = data));
     console.log(products.value);
@@ -14,7 +17,7 @@ const brands = ref();
 const brandDialog = ref(false);
 const deleteBrandDialog = ref(false);
 const product = ref({});
-const img = ref(null);
+// const img = ref(null);
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
@@ -51,12 +54,11 @@ const saveProduct = async () => {
             getAllBrand();
         } catch (error) {
             console.log(error);
+            toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
         }
     }
 };
 const editProduct = (prod) => {
-    console.log(prod);
-
     product.value = { ...prod };
     brandDialog.value = true;
 };
@@ -94,10 +96,13 @@ const getAllBrand = async () => {
         brands.value = res.data.data;
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 </script>
 <template>
+    <Toast />
+
     <div class="mt-3">
         <div class="setting-container">
             <div class="card">

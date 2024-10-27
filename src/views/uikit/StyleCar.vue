@@ -3,6 +3,9 @@ import { ref, onMounted } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { ProductService } from '@/service/ProductService';
 import axiosInstance from '../../service/axiosInstance';
+import { useToast } from 'primevue/usetoast';
+
+const toast = useToast();
 onMounted(() => {
     productService.getProductss().then((data) => (products.value = data));
     console.log(products.value);
@@ -50,6 +53,7 @@ const saveProduct = async () => {
             getAllStyle();
         } catch (error) {
             console.log(error);
+            toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
         }
     }
 };
@@ -93,6 +97,7 @@ const getAllStyle = async () => {
         models.value = res.data.data;
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 </script>

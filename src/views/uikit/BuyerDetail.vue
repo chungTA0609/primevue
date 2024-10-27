@@ -47,7 +47,7 @@ const confirm = (event) => {
             toast.add({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
         },
         reject: () => {
-            toast.add({ severity: 'info', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+            toast.add({ severity: 'info', summary: 'Lỗi', detail: 'You have rejected', life: 3000 });
         }
     });
 };

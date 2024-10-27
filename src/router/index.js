@@ -194,11 +194,6 @@ const router = createRouter({
                     component: () => import('@/views/uikit/ColorCar.vue')
                 },
                 {
-                    path: '/setting',
-                    name: 'setting',
-                    component: () => import('@/views/uikit/Setting.vue')
-                },
-                {
                     path: '/seller',
                     name: 'seller',
                     component: () => import('@/views/uikit/Seller.vue')

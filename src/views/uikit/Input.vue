@@ -2,11 +2,14 @@
 import { ref, onMounted, computed, reactive } from 'vue';
 import { CountryService } from '@/service/CountryService';
 import { NodeService } from '@/service/NodeService';
-// import { useToast } from 'primevue/usetoast';
 // import axios from 'axios';
 import axiosInstance from '../../service/axiosInstance';
+import { useRouter } from 'vue-router';
+import { useToast } from 'primevue/usetoast';
 
-// const toast = useToast();
+const toast = useToast();
+const router = useRouter();
+
 const autoValue = ref(null);
 const dropdownValues = ref([
     { name: 'Xe cũ', code: 'OLD' },
@@ -41,7 +44,7 @@ const address = ref();
 const ward = ref();
 const description = ref();
 const fileArr = reactive([]);
-// const src = ref(null);
+const isLoading = ref(false);
 const brandList = ref([]);
 const models = ref([]);
 const fuelList = ref([]);
@@ -54,32 +57,24 @@ const provinces = ref([
     { name: 'Hà Nội', code: 'HNI' },
     { name: 'TP. Hồ Chí Minh', code: 'HCM' }
 ]);
-// const carParam = ref({
-//     name: 'string',
-//     description: 'string',
-//     manufacturingYear: 0,
-//     seatCapacity: 1,
-//     status: 'string',
-//     transmission: 'string',
-//     drivetrain: 'string',
-//     images: ['string'],
-//     slug: 'string',
-//     version: 'string',
-//     kmDriven: 0,
-//     price: 0,
-//     logo: 'string',
-//     brandId: 0,
-//     modelId: 0,
-//     styleId: 0,
-//     originId: 0,
-//     fuelId: 0,
-//     outsideColorId: 0,
-//     insideColorId: 0,
-//     cityId: 0,
-//     districtId: 0,
-//     wardId: 0,
-//     address: 'string'
-// });
+const transmissionList = ref([
+    {
+        code: 'FWD',
+        name: 'FWD - Dẫn động cầu trước'
+    },
+    {
+        code: 'RWD',
+        name: 'RWD - Dẫn động cầu sau'
+    },
+    {
+        code: '4WD',
+        name: '4WD - Dẫn động 4 bánh'
+    },
+    {
+        code: 'AWD',
+        name: 'AWD - 4 bánh toàn thời gian'
+    }
+]);
 const districts = ref([]);
 const wards = ref([]);
 const getAllBrand = async () => {
@@ -90,6 +85,7 @@ const getAllBrand = async () => {
         });
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const getAllFuel = async () => {
@@ -98,6 +94,7 @@ const getAllFuel = async () => {
         fuelList.value = res.data.data;
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const getAllCities = async () => {
@@ -107,6 +104,7 @@ const getAllCities = async () => {
         console.log(brandList.value);
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const getAllOrigin = async () => {
@@ -115,6 +113,7 @@ const getAllOrigin = async () => {
         originList.value = res.data.data;
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const getAllStyle = async () => {
@@ -123,6 +122,7 @@ const getAllStyle = async () => {
         styleList.value = res.data.data;
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const getAllColor = async () => {
@@ -131,6 +131,7 @@ const getAllColor = async () => {
         colorList.value = res.data.data;
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 
@@ -140,6 +141,7 @@ const getDistrictByCity = async (cityCode) => {
         districts.value = res.data.data;
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const getWardByDistrict = async (districtCode) => {
@@ -148,6 +150,7 @@ const getWardByDistrict = async (districtCode) => {
         wards.value = res.data.data;
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const getAllModel = async () => {
@@ -156,6 +159,7 @@ const getAllModel = async () => {
         models.value = res.data.data;
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const cityChange = () => {
@@ -179,12 +183,34 @@ const enableButton = computed(() => {
     return !!brand.value && !!name.value && !!date.value && !!shape.value && !!origin.value && !!statusCar.value && !!price.value;
 });
 
+const showConfirm = () => {
+    confirm.require({
+        group: 'templating',
+        header: 'Confirmation',
+        message: 'Please confirm to proceed moving forward.',
+        icon: 'pi pi-exclamation-circle',
+        acceptIcon: 'pi pi-check',
+        rejectIcon: 'pi pi-times',
+        rejectClass: 'p-button-outlined p-button-sm',
+        acceptClass: 'p-button-sm',
+        rejectLabel: 'Cancel',
+        acceptLabel: 'Save',
+        accept: () => {
+            isLoading.value = true;
+            Submit();
+        },
+        reject: () => {}
+    });
+};
 const Submit = async () => {
     try {
         await upLoadProcess();
         pushCar();
+        isLoading.value = false;
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
+        isLoading.value = false;
     }
 };
 const onUpload = async (event) => {
@@ -227,7 +253,13 @@ const pushCar = async () => {
             address: [address.value, ward.value.name, district.value.name, province.value.name].join(', ')
         });
         console.log(res);
+        isLoading.value = false;
+        toast.add({ severity: 'info', summary: 'Confirmed', detail: 'Đăng tin thành công', life: 3000 });
+
+        router.push('/mua-xe');
     } catch (error) {
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
+
         console.log(error);
     }
 };
@@ -243,10 +275,22 @@ const uploadImg = async (element) => {
         imgList.value.push(res.data.data);
     } catch (error) {
         console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 </script>
 <template>
+    <Toast />
+
+    <ConfirmDialog group="templating">
+        <template #message="slotProps">
+            <div class="flex flex-column align-items-center w-full gap-3 border-bottom-1 surface-border" v-if="!isLoading">
+                <i :class="slotProps.message.icon" class="text-6xl text-primary-500"></i>
+                <p>{{ slotProps.message.message }}</p>
+            </div>
+            <ProgressSpinner v-else />
+        </template>
+    </ConfirmDialog>
     <div class="grid p-fluid">
         <div class="col-12 md:col-12">
             <div class="card">
@@ -323,11 +367,11 @@ const uploadImg = async (element) => {
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Ngoại thất</h5>
-                                    <Dropdown v-model="exterior" :options="colorList" optionLabel="name" />
+                                    <Dropdown v-model="exterior" :options="colorList" optionLabel="name" placeholder="Màu ngoại thất" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Nội thất</h5>
-                                    <Dropdown v-model="interior" :options="colorList" optionLabel="name" />
+                                    <Dropdown v-model="interior" :options="colorList" optionLabel="name" placeholder="Màu nội thất" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Số chỗ ngồi</h5>
@@ -335,7 +379,7 @@ const uploadImg = async (element) => {
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Dẫn động</h5>
-                                    <Dropdown v-model="driveSystem" :options="dropdownValues" optionLabel="name" />
+                                    <Dropdown v-model="driveSystem" :options="transmissionList" optionLabel="name" placeholder="Hệ dẫn động" />
                                 </div>
                             </div>
                         </div>
@@ -405,7 +449,7 @@ Lưu ý:
                         </div>
                     </div>
                     <div class="col-12 md:col-12 flex" style="justify-content: end">
-                        <Button label="Đăng tin" @click="Submit" style="width: 120px" :disabled="!enableButton"></Button>
+                        <Button label="Đăng tin" @click="showConfirm" style="width: 120px" :disabled="!enableButton"></Button>
                     </div>
                 </div>
             </div>

@@ -1,6 +1,9 @@
 <script setup>
 import { onMounted, reactive, ref, watch } from 'vue';
 import axiosInstance from '../../service/axiosInstance';
+import { useToast } from 'primevue/usetoast';
+
+const toast = useToast();
 const dropdownItems = ref([
     { name: 'Tất cả', code: 'all' },
     { name: 'Xe mới', code: 'new' },
@@ -80,7 +83,7 @@ const queryCar = async (type = null) => {
         });
         car.value = res.data.data;
     } catch (error) {
-        console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const getAllBrand = async () => {
@@ -92,7 +95,7 @@ const getAllBrand = async () => {
         });
         console.log(brandList.value);
     } catch (error) {
-        console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const getAllFuel = async () => {
@@ -100,7 +103,7 @@ const getAllFuel = async () => {
         const res = await axiosInstance.get('/fuels');
         fuelList.value = res.data.data;
     } catch (error) {
-        console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const getAllColor = async () => {
@@ -108,7 +111,7 @@ const getAllColor = async () => {
         const res = await axiosInstance.get('/colors');
         colorList.value = res.data.data;
     } catch (error) {
-        console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const getAllCities = async () => {
@@ -117,7 +120,7 @@ const getAllCities = async () => {
         provinces.value = res.data.data;
         console.log(brandList.value);
     } catch (error) {
-        console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const getAllOrigin = async () => {
@@ -125,7 +128,7 @@ const getAllOrigin = async () => {
         const res = await axiosInstance.get('/origins');
         originList.value = res.data.data;
     } catch (error) {
-        console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const getAllStyle = async () => {
@@ -133,7 +136,7 @@ const getAllStyle = async () => {
         const res = await axiosInstance.get('/styles');
         styleList.value = res.data.data;
     } catch (error) {
-        console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 // const getDistrictByCity = async (cityCode) => {
@@ -145,7 +148,8 @@ const getAllStyle = async () => {
 //         });
 //         console.log(brandList.value);
 //     } catch (error) {
-//         console.log(error);
+//                 toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
+
 //     }
 // };
 // const getWardByDistrict = async (districtCode) => {
@@ -156,7 +160,8 @@ const getAllStyle = async () => {
 //         });
 //         console.log(brandList.value);
 //     } catch (error) {
-//         console.log(error);
+//                 toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
+
 //     }
 // };
 onMounted(() => {
@@ -176,6 +181,8 @@ watch(pagination, (val) => {
 </script>
 
 <template>
+    <Toast />
+
     <div class="grid">
         <div class="col-12 md:col-12">
             <div class="card p-fluid">
