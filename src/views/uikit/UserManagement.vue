@@ -61,11 +61,9 @@ const initFilters1 = () => {
 };
 
 const gotoSeller = (event) => {
-    console.log(event);
     router.push('/seller/1');
 };
 const gotoBuyer = (event) => {
-    console.log(event);
     router.push('/buyer/1');
 };
 </script>

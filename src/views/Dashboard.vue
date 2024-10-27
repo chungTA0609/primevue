@@ -162,7 +162,7 @@ watch(pagination, (val) => {
 </script>
 
 <template>
-    <div class="card" style="padding-bottom: 0px">
+    <div class="card" style="padding-bottom: 0px; min-width: 1200px">
         <h5>Tìm kiếm</h5>
         <TabView v-model:activeIndex="value">
             <TabPanel header="Tìm kiếm tin mua" value="0">
@@ -216,6 +216,6 @@ watch(pagination, (val) => {
 }
 .car-comp {
     padding: 5px;
-    /* min-width: 1570px; */
+    min-width: 1200px;
 }
 </style>

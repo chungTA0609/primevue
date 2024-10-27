@@ -61,7 +61,6 @@ const initFilters1 = () => {
 };
 
 const gotoBuyer = (event) => {
-    console.log(event);
     router.push('/buyer/1');
 };
 </script>

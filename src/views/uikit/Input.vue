@@ -101,7 +101,6 @@ const getAllCities = async () => {
     try {
         const res = await axiosInstance.get('/address/cities');
         provinces.value = res.data.data;
-        console.log(brandList.value);
     } catch (error) {
         console.log(error);
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
@@ -252,7 +251,6 @@ const pushCar = async () => {
             wardId: ward.value.id,
             address: [address.value, ward.value.name, district.value.name, province.value.name].join(', ')
         });
-        console.log(res);
         isLoading.value = false;
         toast.add({ severity: 'info', summary: 'Confirmed', detail: 'Đăng tin thành công', life: 3000 });
 

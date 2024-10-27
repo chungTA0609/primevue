@@ -75,7 +75,6 @@ const queryCar = async (type = null) => {
         queryParams.styleId = style.value?.id;
         queryParams.fuelId = fuel.value?.id;
         queryParams.tranmission = fuel.value?.id;
-        console.log(queryParams);
         if (type) queryParams.sortItems[0].field = type;
 
         const res = await axiosInstance.post('/cars/query', {
@@ -90,10 +89,8 @@ const getAllBrand = async () => {
     try {
         const res = await axiosInstance.get('/brands');
         brandList.value = res.data.data.map((element) => {
-            console.log(element);
             return element;
         });
-        console.log(brandList.value);
     } catch (error) {
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
@@ -118,7 +115,6 @@ const getAllCities = async () => {
     try {
         const res = await axiosInstance.get('/address/cities');
         provinces.value = res.data.data;
-        console.log(brandList.value);
     } catch (error) {
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }

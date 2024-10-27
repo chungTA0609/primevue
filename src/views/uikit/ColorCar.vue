@@ -8,7 +8,6 @@ import { useToast } from 'primevue/usetoast';
 const toast = useToast();
 onMounted(() => {
     productService.getProductss().then((data) => (products.value = data));
-    console.log(products.value);
 });
 const productService = new ProductService();
 const dt = ref();
@@ -41,8 +40,6 @@ const saveProduct = async () => {
             // product.value.logo = res.data.data ?? '';
             product.value.logo = '';
             if (product.value.id) {
-                console.log(product.value.hex);
-
                 products.value[findIndexById(product.value.id)] = product.value;
                 await axiosInstance.put(`/colors/${product.value.id}`, { ...product.value, hex: product.value.hex.includes('#') ? product.value.hex : '#' + product.value.hex });
             } else {

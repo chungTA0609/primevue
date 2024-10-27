@@ -67,10 +67,7 @@ const confirm = (event) => {
     });
 };
 watch(pagination, (val) => {
-    console.log(val);
-
     // queryParams.page = val / 10 + 1;
-
     // queryCar();
 });
 </script>

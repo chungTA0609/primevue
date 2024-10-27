@@ -8,7 +8,6 @@ import { useToast } from 'primevue/usetoast';
 const toast = useToast();
 onMounted(() => {
     productService.getProductss().then((data) => (products.value = data));
-    console.log(products.value);
 });
 const productService = new ProductService();
 const dt = ref();
@@ -34,7 +33,6 @@ const hideDialog = () => {
 };
 const saveProduct = async () => {
     submitted.value = true;
-    console.log(img.value);
 
     if (product?.value.name?.trim()) {
         try {
@@ -58,8 +56,6 @@ const saveProduct = async () => {
     }
 };
 const editProduct = (prod) => {
-    console.log(prod);
-
     product.value = { ...prod };
     modelDialog.value = true;
 };

@@ -32,7 +32,6 @@ const [password, passwordAttrs] = defineField('password');
 
 // Define the submit handler
 const onSubmit = handleSubmit(async (values) => {
-    console.log(values); // Do something with the valid form data
     const res = await axiosInstance.post('/users/auth', {
         username: values.email,
         password: values.password

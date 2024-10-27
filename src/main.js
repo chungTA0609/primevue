@@ -226,3 +226,6 @@ app.component('VirtualScroller', VirtualScroller);
 app.config.globalProperties.$axios = axiosInstance;
 
 app.mount('#app');
+app.config.warnHandler = function () {
+    return null;
+};

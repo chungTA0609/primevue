@@ -4,10 +4,8 @@ import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import { ProductService } from '@/service/ProductService';
 import axiosInstance from '../../service/axiosInstance';
-import axios from 'axios';
 onMounted(() => {
     productService.getProductss().then((data) => (products.value = data));
-    console.log(products.value);
 });
 const productService = new ProductService();
 const toast = useToast();
@@ -36,7 +34,6 @@ const hideDialog = () => {
 };
 const saveProduct = async () => {
     submitted.value = true;
-    console.log(img.value);
 
     if (product?.value.name?.trim()) {
         try {
@@ -54,14 +51,11 @@ const saveProduct = async () => {
             product.value = {};
             getAllBrand();
         } catch (error) {
-            console.log(error);
             toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
         }
     }
 };
 const editProduct = (prod) => {
-    console.log(prod);
-
     product.value = { ...prod };
     brandDialog.value = true;
 };
@@ -71,8 +65,6 @@ const confirmDeleteProduct = (prod) => {
 };
 const deleteProduct = async (product) => {
     try {
-        console.log(product);
-
         await axiosInstance.delete(`/brands/${product.id}`);
         deleteBrandDialog.value = false;
         getAllBrand();
@@ -96,7 +88,6 @@ const uploadImg = async (element) => {
     try {
         const formData = new FormData();
         formData.append('file', element);
-        console.log(element);
 
         return await axiosInstance.post('/files/upload', formData, {
             headers: {
@@ -104,7 +95,6 @@ const uploadImg = async (element) => {
             }
         });
     } catch (error) {
-        console.log(error);
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
@@ -130,7 +120,6 @@ const getAllBrand = async () => {
         const res = await axiosInstance.get('/brands');
         brands.value = res.data.data;
     } catch (error) {
-        console.log(error);
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
