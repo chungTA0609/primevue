@@ -1,7 +1,5 @@
 <script setup>
 import { ref, onMounted, computed, reactive } from 'vue';
-import { CountryService } from '@/service/CountryService';
-import { NodeService } from '@/service/NodeService';
 // import axios from 'axios';
 import axiosInstance from '../../service/axiosInstance';
 import { useRouter } from 'vue-router';
@@ -10,8 +8,6 @@ import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();
 const router = useRouter();
-
-const autoValue = ref(null);
 const dropdownValues = ref([
     { name: 'Xe cũ', code: 'OLD' },
     { name: 'Xe mới', code: 'NEW' }
@@ -30,14 +26,11 @@ const kmUsed = ref(null);
 const statusCar = ref(null);
 const gear = ref(null);
 const fuelType = ref(null);
-const treeSelectNodes = ref(null);
 const price = ref(null);
 const interior = ref(null);
 const exterior = ref(null);
 const places = ref(null);
 const driveSystem = ref(null);
-const countryService = new CountryService();
-const nodeService = new NodeService();
 const fileupload = ref(null);
 const province = ref(null);
 const district = ref(null);
@@ -177,8 +170,6 @@ onMounted(() => {
     getAllFuel();
     getAllColor();
     getAllModel();
-    countryService.getCountries().then((data) => (autoValue.value = data));
-    nodeService.getTreeNodes().then((data) => (treeSelectNodes.value = data));
 });
 const enableButton = computed(() => {
     return !!brand.value && !!name.value && !!date.value && !!shape.value && !!origin.value && !!statusCar.value && !!price.value;
