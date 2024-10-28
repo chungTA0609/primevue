@@ -1,22 +1,18 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
-import { ProductService } from '@/service/ProductService';
 import axiosInstance from '../../service/axiosInstance';
 import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();
-onMounted(() => {
-    productService.getProductss().then((data) => (products.value = data));
-});
-const productService = new ProductService();
+
 const dt = ref();
 const products = ref();
 const models = ref();
+const isLoading = ref(false);
 const modelDialog = ref(false);
 const deleteModelDialog = ref(false);
 const product = ref({});
-const img = ref(null);
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
@@ -36,9 +32,9 @@ const saveProduct = async () => {
 
     if (product?.value.name?.trim()) {
         try {
+            isLoading.value = true;
             // const res = await uploadImg(img.value);
             // product.value.logo = res.data.data ?? '';
-            product.value.logo = '';
             if (product.value.id) {
                 products.value[findIndexById(product.value.id)] = product.value;
                 await axiosInstance.put(`/styles/${product.value.id}`, product.value);
@@ -48,9 +44,10 @@ const saveProduct = async () => {
             }
             modelDialog.value = false;
             product.value = {};
+            isLoading.value = false;
             getAllStyle();
         } catch (error) {
-            console.log(error);
+            isLoading.value = false;
             toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
         }
     }
@@ -65,10 +62,17 @@ const confirmDeleteProduct = (prod) => {
 };
 const deleteProduct = async (product) => {
     try {
+        isLoading.value = true;
+
         await axiosInstance.delete(`/styles/${product.id}`);
         deleteModelDialog.value = false;
+        isLoading.value = false;
+
         getAllStyle();
     } catch (error) {
+        isLoading.value = false;
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
+
         deleteModelDialog.value = false;
     }
 };
@@ -98,6 +102,7 @@ const getAllStyle = async () => {
 };
 </script>
 <template>
+    <Toast />
     <div class="mt-3">
         <div class="setting-container">
             <div class="card">
@@ -115,7 +120,7 @@ const getAllStyle = async () => {
                         <Button label="Thêm mới" icon="pi pi-plus" @click="openNew" />
                     </template>
 
-                    <Column field="name" :header="'Tên kiểu xe'" sortable style="min-width: 30rem"></Column>
+                    <Column field="name" :header="'Tên kiểu xe'" style="min-width: 30rem"></Column>
                     <Column :exportable="false">
                         <template #body="slotProps">
                             <div style="float: right">
@@ -127,31 +132,36 @@ const getAllStyle = async () => {
             </div>
 
             <Dialog v-model:visible="modelDialog" :style="{ width: '450px' }" :header="'Thông tin kiểu xe'" :modal="true">
-                <div>
+                <div v-if="!isLoading">
                     <div class="mt-3">
                         <label for="name" class="block font-bold mb-2">Tên</label>
                         <InputText id="name" v-model.trim="product.name" required="true" autofocus :invalid="submitted && !product.name" fluid />
                         <div v-if="submitted && !product.name" class="text-red-500">Hãy nhập tên mẫu xe.</div>
                     </div>
                 </div>
-
+                <div style="display: flex" v-else>
+                    <ProgressSpinner style="align-items: center"></ProgressSpinner>
+                </div>
                 <template #footer>
-                    <Button label="Hủy" icon="pi pi-times" text @click="hideDialog" />
-                    <Button label="Lưu" icon="pi pi-check" @click="saveProduct" />
+                    <Button v-if="!isLoading" label="Hủy" icon="pi pi-times" text @click="hideDialog" />
+                    <Button v-if="!isLoading" label="Lưu" icon="pi pi-check" @click="saveProduct" />
                 </template>
             </Dialog>
 
             <Dialog v-model:visible="deleteModelDialog" :style="{ width: '450px' }" header="Xác nhận" :modal="true">
-                <div class="flex items-center gap-4">
+                <div v-if="!isLoading" class="flex items-center gap-4">
                     <i class="pi pi-exclamation-triangle !text-3xl" />
                     <span v-if="product"
                         >Bạn có chắc muốn xóa <b>{{ product.name }}</b
                         >?</span
                     >
                 </div>
+                <div style="display: flex" v-else>
+                    <ProgressSpinner style="align-items: center"></ProgressSpinner>
+                </div>
                 <template #footer>
-                    <Button label="Không" icon="pi pi-times" text @click="deleteModelDialog = false" />
-                    <Button label="Có" icon="pi pi-check" @click="deleteProduct(product)" />
+                    <Button v-if="!isLoading" label="Không" icon="pi pi-times" text @click="deleteModelDialog = false" />
+                    <Button v-if="!isLoading" label="Có" icon="pi pi-check" @click="deleteProduct(product)" />
                 </template>
             </Dialog>
         </div>

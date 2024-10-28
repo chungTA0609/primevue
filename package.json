@@ -19,7 +19,9 @@
         "vee-validate": "^4.14.3",
         "vue": "^3.2.41",
         "vue-router": "^4.1.5",
-        "vue3-google-map": "^0.21.0"
+        "vue3-google-map": "^0.21.0",
+        "vuex": "^4.0.2",
+        "vuex-persistedstate": "^4.1.0"
     },
     "devDependencies": {
         "@rushstack/eslint-patch": "^1.1.4",

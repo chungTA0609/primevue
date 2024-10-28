@@ -109,6 +109,7 @@ import VirtualScroller from 'primevue/virtualscroller';
 
 import BlockViewer from '@/components/BlockViewer.vue';
 import CarInfoComp from '@/components/CarInfoComp.vue';
+import store from './store';
 
 import '@/assets/styles.scss';
 
@@ -224,6 +225,7 @@ app.component('TreeTable', TreeTable);
 app.component('TriStateCheckbox', TriStateCheckbox);
 app.component('VirtualScroller', VirtualScroller);
 app.config.globalProperties.$axios = axiosInstance;
+app.use(store);
 
 app.mount('#app');
 app.config.warnHandler = function () {

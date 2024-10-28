@@ -1,17 +1,47 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import AppConfig from '@/layout/AppConfig.vue';
 import { useRouter } from 'vue-router';
+// import axiosInstance from '../service/axiosInstance';
+import { useStore } from 'vuex';
+import { useToast } from 'primevue/usetoast';
+import { useTokenCookie } from '../service/useTokenCookie';
+const toast = useToast();
+const { deleteTokenCookie } = useTokenCookie();
+const store = useStore();
 const { layoutConfig } = useLayout();
 const router = useRouter();
 const smoothScroll = (id) => {
     router.push({ path: id });
 };
-
+// const getMe = async () => {
+//     try {
+//         const res = await axiosInstance.get('/users/me');
+//         console.log(res);
+//     } catch (error) {}
+// };
+onMounted(() => {
+    // getMe();
+});
 const logoUrl = computed(() => {
     return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
+
+const items = [
+    {
+        label: 'Đăng xuất',
+        command: () => {
+            deleteTokenCookie();
+            store.dispatch('user/updateIsLogin', false);
+        }
+    }
+];
+
+const save = () => {
+    toast.add({ severity: 'success', summary: 'Success', detail: 'Data Saved', life: 3000 });
+};
+const isLogin = computed(() => store.getters['user/isLogin']);
 </script>
 
 <template>
@@ -56,8 +86,9 @@ const logoUrl = computed(() => {
                         </li>
                     </ul>
                     <div class="flex justify-content-between lg:block border-top-1 lg:border-top-none surface-border py-3 lg:py-0 mt-3 lg:mt-0">
-                        <Button @click="router.push('/auth/login')" label="Login" class="p-button-text p-button-rounded border-none font-light line-height-2 text-blue-500"></Button>
-                        <Button @click="router.push('/auth/register')" label="Register" class="p-button-rounded border-none ml-5 font-light text-white line-height-2 bg-blue-500"></Button>
+                        <Button v-if="!isLogin" @click="router.push('/auth/login')" label="Đăng nhập" class="p-button-text p-button-rounded border-none font-light line-height-2"></Button>
+                        <Button v-if="!isLogin" @click="router.push('/auth/register')" label="đăng ký"></Button>
+                        <SplitButton v-if="isLogin" label="Thông tin cá nhân" @click="save" :model="items" />
                     </div>
                 </div>
             </div>

@@ -1,6 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AppLayout from '@/layout/AppLayout.vue';
+import { useTokenCookie } from '../service/useTokenCookie';
+const { getTokenCookie } = useTokenCookie();
 
+function isAuthenticated() {
+    // Check token or use any auth state management logic here
+    return getTokenCookie();
+}
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -21,7 +27,8 @@ const router = createRouter({
                 {
                     path: '/ban-xe',
                     name: 'ban-xe',
-                    component: () => import('@/views/uikit/Banxe.vue')
+                    component: () => import('@/views/uikit/Banxe.vue'),
+                    meta: { requiresAuth: true }
                 },
                 {
                     path: '/ban-xe/dang-tin',
@@ -213,7 +220,8 @@ const router = createRouter({
                     name: 'buyerDetail',
                     component: () => import('@/views/uikit/BuyerDetail.vue')
                 }
-            ]
+            ],
+            meta: { requiresAuth: true }
         },
         {
             path: '/landing',
@@ -253,5 +261,15 @@ const router = createRouter({
         }
     ]
 });
-
+router.beforeEach((to, from, next) => {
+    if (to.matched.some((record) => record.meta.requiresAuth)) {
+        if (!isAuthenticated()) {
+            next({ name: 'login' });
+        } else {
+            next();
+        }
+    } else {
+        next();
+    }
+});
 export default router;

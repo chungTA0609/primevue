@@ -14,10 +14,9 @@ const products = ref();
 const brands = ref();
 const brandDialog = ref(false);
 const deleteBrandDialog = ref(false);
-const deleteProductsDialog = ref(false);
 const product = ref({});
 const img = ref(null);
-const selectedProducts = ref();
+const isLoading = ref(false);
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
@@ -37,9 +36,11 @@ const saveProduct = async () => {
 
     if (product?.value.name?.trim()) {
         try {
-            // const res = await uploadImg(img.value);
-            // product.value.logo = res.data.data ?? '';
-            product.value.logo = '';
+            isLoading.value = true;
+
+            const res = await uploadImg(img.value);
+            product.value.logo = res.data.data ?? '';
+            // product.value.logo = '';
             if (product.value.id) {
                 products.value[findIndexById(product.value.id)] = product.value;
                 await axiosInstance.put(`/brands/${product.value.id}`, product.value);
@@ -49,8 +50,10 @@ const saveProduct = async () => {
             }
             brandDialog.value = false;
             product.value = {};
+            isLoading.value = false;
             getAllBrand();
         } catch (error) {
+            isLoading.value = false;
             toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
         }
     }
@@ -65,11 +68,17 @@ const confirmDeleteProduct = (prod) => {
 };
 const deleteProduct = async (product) => {
     try {
+        isLoading.value = true;
+
         await axiosInstance.delete(`/brands/${product.id}`);
         deleteBrandDialog.value = false;
+        isLoading.value = false;
+
         getAllBrand();
     } catch (error) {
+        isLoading.value = false;
         deleteBrandDialog.value = false;
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const findIndexById = (id) => {
@@ -103,13 +112,6 @@ const onSelectFile = (event) => {
     const file = event.files[0];
 
     img.value = file;
-};
-
-const deleteSelectedProducts = () => {
-    products.value = products.value.filter((val) => !selectedProducts.value.includes(val));
-    deleteProductsDialog.value = false;
-    selectedProducts.value = null;
-    toast.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
 };
 
 onMounted(() => {
@@ -149,7 +151,7 @@ const getAllBrand = async () => {
                         </div>
                     </template>
 
-                    <Column field="name" :header="'Tên hãng'" sortable style="min-width: 30rem"></Column>
+                    <Column field="name" :header="'Tên hãng'" style="min-width: 30rem"></Column>
                     <Column :header="'Logo '">
                         <template #body="slotProps">
                             <img :src="slotProps.data.logo" :alt="slotProps.data.logo" class="rounded" style="width: 100px; height: 100px" />
@@ -166,7 +168,7 @@ const getAllBrand = async () => {
             </div>
 
             <Dialog v-model:visible="brandDialog" :style="{ width: '450px' }" :header="'Thông tin hãng'" :modal="true">
-                <div>
+                <div v-if="!isLoading">
                     <div class="mt-3">
                         <label for="name" class="block font-bold mb-2">Tên</label>
                         <InputText id="name" v-model.trim="product.name" required="true" autofocus :invalid="submitted && !product.name" fluid />
@@ -178,35 +180,30 @@ const getAllBrand = async () => {
                         <FileUpload ref="fileupload" name="demo[]" @select="onSelectFile" :multiple="false" accept="image/*" :maxFileSize="1000000" customUpload />
                     </div>
                 </div>
+                <div style="display: flex" v-else>
+                    <ProgressSpinner style="align-items: center"></ProgressSpinner>
+                </div>
 
                 <template #footer>
-                    <Button label="Hủy" icon="pi pi-times" text @click="hideDialog" />
-                    <Button label="Lưu" icon="pi pi-check" @click="saveProduct" />
+                    <Button v-if="!isLoading" label="Hủy" icon="pi pi-times" text @click="hideDialog" />
+                    <Button v-if="!isLoading" label="Lưu" icon="pi pi-check" @click="saveProduct" />
                 </template>
             </Dialog>
 
             <Dialog v-model:visible="deleteBrandDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
-                <div class="flex items-center gap-4">
+                <div v-if="!isLoading" class="flex items-center gap-4">
                     <i class="pi pi-exclamation-triangle !text-3xl" />
                     <span v-if="product"
                         >Bạn có chắc muốn xóa <b>{{ product.name }}</b
                         >?</span
                     >
                 </div>
-                <template #footer>
-                    <Button label="Không" icon="pi pi-times" text @click="deleteBrandDialog = false" />
-                    <Button label="Có" icon="pi pi-check" @click="deleteProduct(product)" />
-                </template>
-            </Dialog>
-
-            <Dialog v-model:visible="deleteProductsDialog" :style="{ width: '450px' }" header="Xác nhận" :modal="true">
-                <div class="flex items-center gap-4">
-                    <i class="pi pi-exclamation-triangle !text-3xl" />
-                    <span v-if="product">Bạn muốn xóa tất cả hãng đã chọn?</span>
+                <div style="display: flex" v-else>
+                    <ProgressSpinner style="align-items: center"></ProgressSpinner>
                 </div>
                 <template #footer>
-                    <Button label="Không" icon="pi pi-times" text @click="deleteProductsDialog = false" />
-                    <Button label="Có" icon="pi pi-check" text @click="deleteSelectedProducts" />
+                    <Button v-if="!isLoading" label="Không" icon="pi pi-times" text @click="deleteBrandDialog = false" />
+                    <Button v-if="!isLoading" label="Có" icon="pi pi-check" @click="deleteProduct(product)" />
                 </template>
             </Dialog>
         </div>

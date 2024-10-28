@@ -6,6 +6,7 @@ import { NodeService } from '@/service/NodeService';
 import axiosInstance from '../../service/axiosInstance';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
+// import { useConfirm } from 'primevue/useconfirm';
 
 const toast = useToast();
 const router = useRouter();
@@ -20,15 +21,15 @@ const gearValues = ref([
     { name: 'Số tự động', code: 'NEW' }
 ]);
 const brand = ref(dropdownValues.value[0]);
-const name = ref();
-const date = ref();
+const name = ref(null);
+const date = ref(null);
 const version = ref(null);
-const shape = ref();
-const origin = ref();
+const shape = ref(null);
+const origin = ref(null);
 const kmUsed = ref(null);
-const statusCar = ref();
-const gear = ref();
-const fuelType = ref();
+const statusCar = ref(null);
+const gear = ref(null);
+const fuelType = ref(null);
 const treeSelectNodes = ref(null);
 const price = ref(null);
 const interior = ref(null);
@@ -37,14 +38,15 @@ const places = ref(null);
 const driveSystem = ref(null);
 const countryService = new CountryService();
 const nodeService = new NodeService();
-const fileupload = ref();
-const province = ref();
-const district = ref();
-const address = ref();
-const ward = ref();
-const description = ref();
+const fileupload = ref(null);
+const province = ref(null);
+const district = ref(null);
+const address = ref(null);
+const ward = ref(null);
+const description = ref(null);
 const fileArr = reactive([]);
 const isLoading = ref(false);
+const confirmModal = ref(false);
 const brandList = ref([]);
 const models = ref([]);
 const fuelList = ref([]);
@@ -183,33 +185,19 @@ const enableButton = computed(() => {
 });
 
 const showConfirm = () => {
-    confirm.require({
-        group: 'templating',
-        header: 'Confirmation',
-        message: 'Please confirm to proceed moving forward.',
-        icon: 'pi pi-exclamation-circle',
-        acceptIcon: 'pi pi-check',
-        rejectIcon: 'pi pi-times',
-        rejectClass: 'p-button-outlined p-button-sm',
-        acceptClass: 'p-button-sm',
-        rejectLabel: 'Cancel',
-        acceptLabel: 'Save',
-        accept: () => {
-            isLoading.value = true;
-            Submit();
-        },
-        reject: () => {}
-    });
+    confirmModal.value = true;
 };
 const Submit = async () => {
     try {
+        confirmModal.value = true;
+        isLoading.value = true;
         await upLoadProcess();
         pushCar();
-        isLoading.value = false;
     } catch (error) {
         console.log(error);
-        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi upload ảnh', life: 3000 });
         isLoading.value = false;
+        confirmModal.value = false;
     }
 };
 const onUpload = async (event) => {
@@ -224,15 +212,15 @@ const upLoadProcess = async () => {
 };
 const pushCar = async () => {
     try {
-        const res = await axiosInstance.post('/cars', {
+        await axiosInstance.post('/cars', {
             // ...carParam,
             name: name.value.name,
             description: description.value,
             manufacturingYear: parseInt(date.value),
             seatCapacity: parseInt(places.value),
-            status: statusCar.value.code,
-            transmission: driveSystem.value.code,
-            drivetrain: gear.value.code,
+            status: statusCar.value.code ?? '',
+            transmission: driveSystem.value.code ?? '',
+            drivetrain: gear.value.code ?? '',
             images: imgList.value,
             slug: (name.value.name + ' ' + version.value + ' ' + Date.now()).split(' ').join('-').toLowerCase(),
             version: version.value,
@@ -253,11 +241,11 @@ const pushCar = async () => {
         });
         isLoading.value = false;
         toast.add({ severity: 'info', summary: 'Confirmed', detail: 'Đăng tin thành công', life: 3000 });
-
+        confirmModal.value = false;
         router.push('/mua-xe');
     } catch (error) {
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
-
+        confirmModal.value = false;
         console.log(error);
     }
 };
@@ -280,15 +268,16 @@ const uploadImg = async (element) => {
 <template>
     <Toast />
 
-    <ConfirmDialog group="templating">
-        <template #message="slotProps">
-            <div class="flex flex-column align-items-center w-full gap-3 border-bottom-1 surface-border" v-if="!isLoading">
-                <i :class="slotProps.message.icon" class="text-6xl text-primary-500"></i>
-                <p>{{ slotProps.message.message }}</p>
-            </div>
-            <ProgressSpinner v-else />
+    <Dialog v-model:visible="confirmModal" :style="{ width: '450px' }" header="Xác nhận" :modal="true">
+        <div class="flex items-center gap-4">
+            <div v-if="!isLoading"><i class="pi pi-exclamation-triangle !text-3xl" /> <span>Bạn xác nhận các thông tin trên là đúng ?</span></div>
+            <ProgressSpinner v-else></ProgressSpinner>
+        </div>
+        <template #footer>
+            <Button label="Không" icon="pi pi-times" text @click="confirmModal = false" v-if="!isLoading" />
+            <Button label="Có" icon="pi pi-check" @click="Submit" v-if="!isLoading" />
         </template>
-    </ConfirmDialog>
+    </Dialog>
     <div class="grid p-fluid">
         <div class="col-12 md:col-12">
             <div class="card">
@@ -403,7 +392,7 @@ Lưu ý:
                     </div>
                     <div class="col-12 md:col-12">
                         <div class="card mt-4">
-                            <h5>Đăng ảnh cho xe (ít nhất 5 ảnh tương ứng 5 góc chụp khác nhau nếu có)</h5>
+                            <h5>Đăng ảnh cho xe (ít nhất 5 ảnh tương ứng 5 góc chụp khác nhau nếu có)<b style="color: red">*</b></h5>
                             <FileUpload v-model="fileArr" ref="fileupload" name="demo[]" @select="onUpload" :multiple="true" accept="image/*" :maxFileSize="1000000" customUpload />
                         </div>
                     </div>

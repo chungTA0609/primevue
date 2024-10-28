@@ -13,10 +13,13 @@ const productService = new ProductService();
 const dt = ref();
 const products = ref();
 const models = ref();
+const brand = ref(null);
+const brands = ref();
+const fileArr = ref(null);
 const modelDialog = ref(false);
+const isLoading = ref(false);
 const deleteModelDialog = ref(false);
 const product = ref({});
-const img = ref(null);
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
@@ -36,9 +39,12 @@ const saveProduct = async () => {
 
     if (product?.value.name?.trim()) {
         try {
-            // const res = await uploadImg(img.value);
-            // product.value.logo = res.data.data ?? '';
-            product.value.logo = '';
+            isLoading.value = true;
+
+            const res = await uploadImg(fileArr.value);
+
+            product.value.logo = res.data.data ?? '';
+            product.value.brandId = brand.value.id;
             if (product.value.id) {
                 products.value[findIndexById(product.value.id)] = product.value;
                 await axiosInstance.put(`/models/${product.value.id}`, product.value);
@@ -46,13 +52,31 @@ const saveProduct = async () => {
                 products.value.push(product.value);
                 await axiosInstance.post(`/models`, product.value);
             }
+            isLoading.value = false;
+
             modelDialog.value = false;
             product.value = {};
-            getAllModel();
+            getModelByBrand();
         } catch (error) {
+            isLoading.value = true;
             console.log(error);
             toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
         }
+    }
+};
+
+const uploadImg = async (element) => {
+    try {
+        const formData = new FormData();
+        formData.append('file', element);
+
+        return await axiosInstance.post('/files/upload', formData, {
+            headers: {
+                Accept: undefined
+            }
+        });
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
 const editProduct = (prod) => {
@@ -65,10 +89,13 @@ const confirmDeleteProduct = (prod) => {
 };
 const deleteProduct = async (product) => {
     try {
+        isLoading.value = true;
         await axiosInstance.delete(`/models/${product.id}`);
         deleteModelDialog.value = false;
-        getAllModel();
+        getModelByBrand();
+        isLoading.value = false;
     } catch (error) {
+        isLoading.value = false;
         deleteModelDialog.value = false;
     }
 };
@@ -85,16 +112,27 @@ const findIndexById = (id) => {
 };
 
 onMounted(() => {
-    getAllModel();
+    getAllBrand();
 });
-const getAllModel = async () => {
+const getAllBrand = async () => {
     try {
-        const res = await axiosInstance.get('/models', 11);
+        const res = await axiosInstance.get('/brands');
+        brands.value = res.data.data;
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
+    }
+};
+const getModelByBrand = async () => {
+    try {
+        const res = await axiosInstance.get(`/models?brandId=${brand.value.id}`);
         models.value = res.data.data;
     } catch (error) {
         console.log(error);
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
+};
+const onSelectFile = (event) => {
+    fileArr.value = event.files[0];
 };
 </script>
 <template>
@@ -114,11 +152,11 @@ const getAllModel = async () => {
                                 <InputText style="float: right" v-model="filters['global'].value" placeholder="Search..." />
                             </IconField>
                         </div>
-                        <Button label="Thêm mới" icon="pi pi-plus" @click="openNew" />
+                        <Dropdown @change="getModelByBrand" v-model="brand" class="mr-2" :options="brands" optionLabel="name" placeholder="Tên xe" />
+                        <Button :disabled="!brand" label="Thêm mới" icon="pi pi-plus" @click="openNew" />
                     </template>
 
-                    <Column field="name" :header="'Tên mẫu xe'" sortable style="min-width: 30rem"></Column>
-                    <Column field="brandId" :header="'Tên hãng xe'" sortable style="min-width: 30rem"></Column>
+                    <Column field="name" :header="'Tên mẫu xe'" style="min-width: 30rem"></Column>
                     <Column :header="'Logo '">
                         <template #body="slotProps">
                             <img :src="slotProps.data.logo" :alt="slotProps.data.logo" class="rounded" style="width: 100px; height: 100px" />
@@ -136,30 +174,41 @@ const getAllModel = async () => {
 
             <Dialog v-model:visible="modelDialog" :style="{ width: '450px' }" :header="'Thông tin mẫu xe'" :modal="true">
                 <div>
-                    <div class="mt-3">
+                    <div class="mt-3" v-if="!isLoading">
                         <label for="name" class="block font-bold mb-2">Tên</label>
                         <InputText id="name" v-model.trim="product.name" required="true" autofocus :invalid="submitted && !product.name" fluid />
                         <div v-if="submitted && !product.name" class="text-red-500">Hãy nhập tên mẫu xe.</div>
                     </div>
+                    <div class="mt-3" v-if="!isLoading">
+                        <label for="inventoryStatus" class="block font-bold mb-3">Logo </label>
+                        <img v-if="product.logo" :src="product.logo" :alt="product.image" class="block m-auto pb-4" style="width: 100px; height: 100px" />
+                        <FileUpload ref="fileupload" name="demo[]" @select="onSelectFile" :multiple="false" accept="image/*" :maxFileSize="1000000" customUpload />
+                    </div>
+                    <div style="display: flex" v-else>
+                        <ProgressSpinner style="align-items: center"></ProgressSpinner>
+                    </div>
                 </div>
 
                 <template #footer>
-                    <Button label="Hủy" icon="pi pi-times" text @click="hideDialog" />
-                    <Button label="Lưu" icon="pi pi-check" @click="saveProduct" />
+                    <Button v-if="!isLoading" label="Hủy" icon="pi pi-times" text @click="hideDialog" />
+                    <Button v-if="!isLoading" label="Lưu" icon="pi pi-check" @click="saveProduct" />
                 </template>
             </Dialog>
 
             <Dialog v-model:visible="deleteModelDialog" :style="{ width: '450px' }" header="Xác nhận" :modal="true">
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4" v-if="!isLoading">
                     <i class="pi pi-exclamation-triangle !text-3xl" />
                     <span v-if="product"
                         >Bạn có chắc muốn xóa <b>{{ product.name }}</b
                         >?</span
                     >
                 </div>
+                <div style="display: flex" v-else>
+                    <ProgressSpinner style="align-items: center"></ProgressSpinner>
+                </div>
                 <template #footer>
-                    <Button label="Không" icon="pi pi-times" text @click="deleteModelDialog = false" />
-                    <Button label="Có" icon="pi pi-check" @click="deleteProduct(product)" />
+                    <Button v-if="!isLoading" label="Không" icon="pi pi-times" text @click="deleteModelDialog = false" />
+                    <Button v-if="!isLoading" label="Có" icon="pi pi-check" @click="deleteProduct(product)" />
                 </template>
             </Dialog>
         </div>

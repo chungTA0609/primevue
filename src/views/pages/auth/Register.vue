@@ -1,6 +1,6 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import AppConfig from '@/layout/AppConfig.vue';
 
 import { useForm } from 'vee-validate';
@@ -18,32 +18,42 @@ const { errors, defineField, handleSubmit } = useForm({
         yup.object({
             username: yup.string().required('Vui lòng nhập tên tài khoản'),
             address: yup.string().required('Vui lòng nhập địa chỉ'),
-            email: yup.string().email('Vui lòng nhập đúng định dạng email'),
             fullName: yup.string().required('Vui lòng nhập tên'),
             phoneNumber: yup.string().required('Vui số điện thoại'),
             password: yup.string().required('Vui lòng nhập mật khẩu.'),
-            rePassword: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match')
+            rePassword: yup.string().oneOf([yup.ref('password'), null], 'Không trùng khớp')
         })
     )
 });
 const isEmail = (value) => {
     return /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,20})/.test(value);
 };
-const [email, emailAttrs] = defineField('email');
 const [phoneNumber, phoneNumberAttrs] = defineField('phoneNumber');
-const [otherPhoneNumber, otherPhoneNumberAttrs] = defineField('otherPhoneNumber');
 const [address, addressAttrs] = defineField('address');
+const city = ref();
+const provinces = ref();
+const ward = ref();
+const wards = ref([]);
+const district = ref();
+const districts = ref([]);
 const [username, usernameAttrs] = defineField('username');
 const [password, passwordAttrs] = defineField('password');
 const [rePassword, rePasswordAttrs] = defineField('rePassword');
 const [fullName, fullNameAttrs] = defineField('fullName');
 
+onMounted(() => {
+    getAllCities();
+});
+
 // Define the submit handler
 const onSubmit = handleSubmit(async (values) => {
     console.log(values); // Do something with the valid form data
     try {
-        const res = await axiosInstance.post('/users', {
+        const res = await axiosInstance.post('/users/register', {
             username: values.username,
+            phoneNum: values.phoneNumber,
+            fullname: values.fullName,
+            wardId: ward.value.id,
             password: values.password
         });
         console.log(res);
@@ -61,6 +71,38 @@ const logoUrl = computed(() => {
 const disableSubmit = computed(() => {
     return !isEmail(password.value) || !(Object.keys(errors.value).length === 0 && errors.value.constructor === Object);
 });
+const getAllCities = async () => {
+    try {
+        const res = await axiosInstance.get('/address/cities');
+        provinces.value = res.data.data;
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
+    }
+};
+const cityChange = () => {
+    getDistrictByCity(city.value);
+};
+const districtChange = () => {
+    getWardByDistrict(district.value);
+};
+const getDistrictByCity = async (cityCode) => {
+    try {
+        const res = await axiosInstance.get(`/address/districts?cityCode=${cityCode.code}`);
+        districts.value = res.data.data;
+    } catch (error) {
+        console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
+    }
+};
+const getWardByDistrict = async (districtCode) => {
+    try {
+        const res = await axiosInstance.get(`/address/wards?districtCode=${districtCode.code}`);
+        wards.value = res.data.data;
+    } catch (error) {
+        console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
+    }
+};
 </script>
 
 <template>
@@ -128,22 +170,19 @@ const disableSubmit = computed(() => {
                             <div class="error-msg">{{ errors.phoneNumber }}</div>
                         </div>
                         <div class="field">
-                            <label for="fullName" class="block text-900 text-xl font-medium mb-2">Số điện thoại khác</label>
-                            <InputText v-bind="otherPhoneNumberAttrs" id="otherPhone" type="text" placeholder="Số điện thoại khác" class="w-full md:w-30rem mb-2" style="padding: 1rem" v-model="otherPhoneNumber" :invalid="!!errors.otherPhoneNumber" />
-                            <div class="error-msg">{{ errors.otherPhoneNumber }}</div>
+                            <label for="region" class="block text-900 text-xl font-medium mb-2">Tỉnh/Thành phố <b style="color: red">*</b></label>
+                            <Dropdown id="region" placeholder="Tỉnh/Thành phố" class="mb-2 w-full" v-model="city" @change="cityChange" optionLabel="name" :options="provinces" />
                         </div>
                         <div class="field">
-                            <label for="fullName" class="block text-900 text-xl font-medium mb-2">Email</label>
-                            <InputText v-bind="emailAttrs" id="email1" type="text" placeholder="Email" class="w-full md:w-30rem mb-2" style="padding: 1rem" v-model="email" :invalid="!!errors.email" />
-                            <div class="error-msg">{{ errors.email }}</div>
+                            <label for="district" class="block text-900 text-xl font-medium mb-2">Quận/Huyện <b style="color: red">*</b></label>
+                            <Dropdown id="district" placeholder="Quận/Huyện" class="mb-2 w-full" v-model="district" @change="districtChange" optionLabel="name" :options="districts" />
                         </div>
                         <div class="field">
-                            <label for="fullName" class="block text-900 text-xl font-medium mb-2">Khu vực sinh sống <b style="color: red">*</b></label>
-                            <Dropdown v-bind="emailAttrs" id="region" placeholder="Email" class="mb-2 w-full" style="padding: 1rem; max-height: 70%" v-model="email" :invalid="!!errors.email" />
-                            <div class="error-msg">{{ errors.email }}</div>
+                            <label for="ward" class="block text-900 text-xl font-medium mb-2">Xã/Phường <b style="color: red">*</b></label>
+                            <Dropdown id="ward" placeholder="Xã/Phường" class="mb-2 w-full" v-model="ward" optionLabel="name" :options="wards" />
                         </div>
                         <div class="field">
-                            <label for="fullName" class="block text-900 text-xl font-medium mb-2">Địa chỉ <b style="color: red">*</b></label>
+                            <label for="address" class="block text-900 text-xl font-medium mb-2">Địa chỉ <b style="color: red">*</b></label>
                             <InputText v-bind="addressAttrs" id="address" type="text" placeholder="Địa chỉ" class="w-full md:w-30rem mb-2" style="padding: 1rem" v-model="address" :invalid="!!errors.address" />
                             <div class="error-msg">{{ errors.address }}</div>
                         </div>

@@ -9,9 +9,13 @@ import { toTypedSchema } from '@vee-validate/yup';
 import { useRouter } from 'vue-router';
 import axiosInstance from '../../../service/axiosInstance';
 import { useTokenCookie } from '../../../service/useTokenCookie';
+import { useStore } from 'vuex';
 
+import { useToast } from 'primevue/usetoast';
+
+const toast = useToast();
 const { setTokenCookie } = useTokenCookie();
-
+const store = useStore();
 const router = useRouter();
 const { layoutConfig } = useLayout();
 const { errors, defineField, handleSubmit } = useForm({
@@ -32,11 +36,19 @@ const [password, passwordAttrs] = defineField('password');
 
 // Define the submit handler
 const onSubmit = handleSubmit(async (values) => {
-    const res = await axiosInstance.post('/users/auth', {
-        username: values.email,
-        password: values.password
-    });
-    setTokenCookie(res.data.data.token, 1);
+    try {
+        const res = await axiosInstance.post('/users/auth', {
+            username: values.email,
+            password: values.password
+        });
+        store.dispatch('user/updateIsLogin', true);
+        toast.add({ severity: 'info', summary: 'Lỗi', detail: 'Đăng nhập thành công', life: 3000 });
+
+        setTokenCookie(res.data.data.token, 1);
+        router.push('/');
+    } catch (error) {
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
+    }
 });
 const logoUrl = computed(() => {
     return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
@@ -48,6 +60,7 @@ const disableSubmit = computed(() => {
 </script>
 
 <template>
+    <Toast />
     <div class="surface-ground flex align-items-center justify-content-center min-h-screen min-w-screen overflow-hidden">
         <div class="flex flex-column align-items-center justify-content-center">
             <img :src="logoUrl" alt="Sakai logo" class="mb-5 w-6rem flex-shrink-0" @click="router.push('/')" />
