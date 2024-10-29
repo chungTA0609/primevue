@@ -4,6 +4,9 @@ const actions = {
     },
     updateIsLogin({ commit }, isLogin) {
         commit('setIsLogin', isLogin);
+    },
+    updateUserData({ commit }, userData) {
+        commit('setUserData', userData);
     }
 };
 

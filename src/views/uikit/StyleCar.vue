@@ -135,7 +135,7 @@ const getAllStyle = async () => {
                 <div v-if="!isLoading">
                     <div class="mt-3">
                         <label for="name" class="block font-bold mb-2">Tên</label>
-                        <InputText id="name" v-model.trim="product.name" required="true" autofocus :invalid="submitted && !product.name" fluid />
+                        <InputText v-model.trim="product.name" required="true" autofocus :invalid="submitted && !product.name" fluid />
                         <div v-if="submitted && !product.name" class="text-red-500">Hãy nhập tên mẫu xe.</div>
                     </div>
                 </div>

@@ -5,14 +5,14 @@ import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();
 const dropdownItems = ref([
-    { name: 'Tất cả', code: 'all' },
-    { name: 'Xe mới', code: 'new' },
-    { name: 'Xe cũ', code: 'used' }
+    { name: 'Xe mới', code: 'NEW' },
+    { name: 'Xe cũ', code: 'OLD' }
 ]);
 const gearItems = ref([
-    { name: 'Tất cả', code: 'all' },
-    { name: 'Số sàn', code: 'handle' },
-    { name: 'Số tự động', code: 'auto' }
+    { name: 'Số sàn', code: 'MANUAL' },
+    { name: 'Số tự động', code: 'AUTOMATIC' },
+    { name: 'Hybrid', code: 'HYBIRD' },
+    { name: 'Khác', code: 'OTHER' }
 ]);
 const provinces = ref([
     { name: 'Toàn quốc', code: 'all' },
@@ -27,8 +27,11 @@ const style = ref();
 const selectedNode = ref();
 const firstPrice = ref();
 const fuel = ref();
+const tranmission = ref();
 const origin = ref();
 const lastPrice = ref();
+const color = ref();
+const place = ref();
 const pagination = ref(0);
 const car = ref({ list: [] });
 const queryParams = reactive({
@@ -68,20 +71,31 @@ const transmissionList = ref([
 const queryCar = async (type = null) => {
     try {
         queryParams.page = pagination.value;
-
         queryParams.brandId = selectedNode.value?.id;
-        queryParams.cityId = province.value;
+        queryParams.cityId = province.value?.id;
         queryParams.originId = origin.value?.id;
         queryParams.styleId = style.value?.id;
         queryParams.fuelId = fuel.value?.id;
+        queryParams.colorId = color.value?.id;
         queryParams.tranmission = fuel.value?.id;
+        queryParams.status = dropdownItem.value?.code;
+        queryParams.transmission = gearItem.value?.code;
+        queryParams.drivetrain = tranmission.value?.code;
+
+        queryParams.drivetrain = lastPrice.value;
         if (type) queryParams.sortItems[0].field = type;
 
-        const res = await axiosInstance.post('/cars/query', {
-            ...queryParams
-        });
-        car.value = res.data.data;
+        setTimeout(async () => {
+            queryParams.seatCapacity = place.value;
+            queryParams.minPrice = firstPrice.value;
+            queryParams.maxPrice = lastPrice.value;
+            const res = await axiosInstance.post('/cars/query', {
+                ...queryParams
+            });
+            car.value = res.data.data;
+        }, 500);
     } catch (error) {
+        console.log(error);
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
@@ -189,8 +203,8 @@ watch(pagination, (val) => {
                         <Dropdown @change="queryCar('brandId')" id="state" v-model="selectedNode" :options="brandList" optionLabel="name" placeholder="Chọn tình hãng xe"></Dropdown>
                     </div>
                     <div class="field col-12 md:col-4">
-                        <label for="state">Tình trạng xe</label>
-                        <Dropdown @change="queryCar(null)" id="state" v-model="dropdownItem" :options="dropdownItems" optionLabel="name" placeholder="Chọn tình trạng xe"></Dropdown>
+                        <label for="status">Tình trạng xe</label>
+                        <Dropdown @change="queryCar('status')" id="status" v-model="dropdownItem" :options="dropdownItems" optionLabel="name" placeholder="Chọn tình trạng xe"></Dropdown>
                     </div>
                     <div class="field col-12 md:col-4">
                         <label for="province">Tỉnh thành</label>
@@ -198,14 +212,14 @@ watch(pagination, (val) => {
                     </div>
                     <div class="field col-12 md:col-6">
                         <label for="gear">Hộp số</label>
-                        <Dropdown id="gear" @change="queryCar" v-model="gearItem" :options="gearItems" optionLabel="name" placeholder="Chọn loại hộp số"></Dropdown>
+                        <Dropdown id="gear" @change="queryCar('transmission')" v-model="gearItem" :options="gearItems" optionLabel="name" placeholder="Chọn loại hộp số"></Dropdown>
                     </div>
                     <div class="field col-12 md:col-6">
                         <label for="price">Khoảng giá</label>
                         <div class="price-display">
-                            <InputNumber @update:modelValue="queryCar('minPrice')" class="price" v-model="firstPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
+                            <InputNumber @update:modelValue="queryCar('price')" class="price" v-model="firstPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
                             <p style="margin-top: 5px">-</p>
-                            <InputNumber @update:modelValue="queryCar('maxPrice')" class="price" v-model="lastPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
+                            <InputNumber @update:modelValue="queryCar('price')" class="price" v-model="lastPrice" inputId="currency-us" mode="currency" currency="VND" locale="en-US" fluid />
                         </div>
                     </div>
                     <Panel style="width: 100%" header="Mở rộng điều kiện tìm kiếm" :toggleable="true" :collapsed="true">
@@ -228,7 +242,7 @@ watch(pagination, (val) => {
                             </div>
                             <div class="field col-12 md:col-4">
                                 <label for="place">Số chỗ ngồi</label>
-                                <InputNumber @update:modelValue="queryCar" v-model="place" inputId="currency-us" fluid placeholder="Số chỗ ngồi" />
+                                <InputNumber @update:modelValue="queryCar('seatCapacity')" v-model="place" inputId="currency-us" fluid placeholder="Số chỗ ngồi" />
                             </div>
                             <div class="field col-12 md:col-4">
                                 <label for="gear">Dẫn động</label>

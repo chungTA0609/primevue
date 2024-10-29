@@ -23,8 +23,6 @@ export function useTokenCookie() {
             while (cookie.charAt(0) === ' ') cookie = cookie.substring(1);
             if (cookie.indexOf(nameEQ) === 0) {
                 token.value = cookie.substring(nameEQ.length);
-                console.log(token.value);
-
                 return token.value;
             }
         }

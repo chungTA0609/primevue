@@ -157,11 +157,7 @@ const onSelectFile = (event) => {
                     </template>
 
                     <Column field="name" :header="'Tên mẫu xe'" style="min-width: 30rem"></Column>
-                    <Column :header="'Logo '">
-                        <template #body="slotProps">
-                            <img :src="slotProps.data.logo" :alt="slotProps.data.logo" class="rounded" style="width: 100px; height: 100px" />
-                        </template>
-                    </Column>
+
                     <Column :exportable="false">
                         <template #body="slotProps">
                             <div style="float: right">

@@ -60,7 +60,7 @@ const queryCar = async () => {
         pageSize: 10,
         sortItems: [
             {
-                field: 'styleId',
+                field: 'districtId',
                 desc: true
             }
         ]

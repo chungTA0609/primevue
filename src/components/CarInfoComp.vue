@@ -25,7 +25,7 @@ const gotoDetail = (slug) => {
                         <b>{{ dataCar.manufacturingYear }} - Xe {{ dataCar?.status === 'OLD' ? 'cũ' : 'mới' }} </b>
                     </p>
                     <img alt="logo" :src="dataCar?.logo" style="width: 80px; max-height: 80px" />
-                    <p style="margin-top: 12px">Mã: 678910JQKA</p>
+                    <p style="margin-top: 12px">Mã: {{ dataCar?.code }}</p>
                 </div>
             </div>
             <div class="col-7">
@@ -39,15 +39,16 @@ const gotoDetail = (slug) => {
             </div>
             <div class="col-3">
                 <div class="title-info">
-                    <div class="price">Giá: {{ dataCar?.price.toLocaleString('en-US') }}</div>
-                    <div class="province">{{ dataCar?.city?.name }}</div>
+                    <div class="price">Giá số: {{ dataCar?.price ? dataCar?.price.toLocaleString('en-US') : '' }}</div>
+                    <div class="price">Giá chữ: {{ dataCar?.priceText ? dataCar.priceText : '' }}</div>
+                    <!-- <div class="province">{{ dataCar?.city?.name }}</div> -->
                 </div>
                 <div class="contact-info">
                     <div class="address">
                         <div class="name">Liên hệ: <b>Lê Trọng Đứk</b></div>
                         <div class="place">{{ props.dataCar?.address }}</div>
                     </div>
-                    <div class="phone-number">ĐT: 0909 799 678 - 0909 799 676</div>
+                    <div class="phone-number">ĐT: {{ dataCar?.userPhoneNum }}</div>
                     <slot></slot>
                 </div>
             </div>
@@ -66,8 +67,8 @@ const gotoDetail = (slug) => {
     margin-top: 15px;
 }
 .title-info {
-    display: flex;
-    justify-content: space-between;
+    /* display: flex;
+    justify-content: space-between; */
 }
 .price {
     font-size: 15px;

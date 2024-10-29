@@ -1,10 +1,12 @@
 // src/axiosInstance.js
 
 import axios from 'axios';
+import { useTokenCookie } from './useTokenCookie';
 
+const { getTokenCookie } = useTokenCookie();
 // Create an instance of Axios
 const axiosInstance = axios.create({
-    baseURL: 'https://5301-171-242-43-39.ngrok-free.app/api/', // Replace with your API base URL
+    baseURL: 'https://a73f-171-241-35-243.ngrok-free.app/api/', // Replace with your API base URL
     timeout: 10000 // Set a timeout for requests,
 });
 
@@ -17,7 +19,7 @@ axiosInstance.interceptors.request.use(
             'Content-Type': 'application/json'
         };
         // Add any custom headers, like authorization tokens
-        const token = localStorage.getItem('token'); // Example: Get token from localStorage
+        const token = getTokenCookie(); // Example: Get token from localStorage
         if (token) {
             returnConfig.headers.Authorization = `Bearer ${token}`;
         }

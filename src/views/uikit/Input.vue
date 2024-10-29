@@ -1,11 +1,13 @@
 <script setup>
-import { ref, onMounted, computed, reactive } from 'vue';
+import { ref, onMounted, computed, reactive, onBeforeMount } from 'vue';
 // import axios from 'axios';
 import axiosInstance from '../../service/axiosInstance';
 import { useRouter } from 'vue-router';
 import { useToast } from 'primevue/usetoast';
 // import { useConfirm } from 'primevue/useconfirm';
+import { useStore } from 'vuex';
 
+const store = useStore();
 const toast = useToast();
 const router = useRouter();
 const dropdownValues = ref([
@@ -16,7 +18,7 @@ const gearValues = ref([
     { name: 'Số sàn', code: 'OLD' },
     { name: 'Số tự động', code: 'NEW' }
 ]);
-const brand = ref(dropdownValues.value[0]);
+const brand = ref('');
 const name = ref(null);
 const date = ref(null);
 const version = ref(null);
@@ -31,6 +33,8 @@ const interior = ref(null);
 const exterior = ref(null);
 const places = ref(null);
 const driveSystem = ref(null);
+const userName = ref(null);
+const userPhone = ref(null);
 const fileupload = ref(null);
 const province = ref(null);
 const district = ref(null);
@@ -47,6 +51,34 @@ const originList = ref([]);
 const styleList = ref([]);
 const colorList = ref([]);
 const imgList = ref([]);
+
+const autoValue = ref([]);
+const autoValue2 = ref([]);
+const autoFilteredValue = ref([]);
+const autoFilteredValue2 = ref([]);
+function searchBrand(event) {
+    setTimeout(() => {
+        if (!event.query.trim().length) {
+            autoFilteredValue.value = [...autoValue.value];
+        } else {
+            autoFilteredValue.value = autoValue.value.filter((country) => {
+                return country.name.toLowerCase().startsWith(event.query.toLowerCase());
+            });
+        }
+    }, 250);
+}
+function searchModel(event) {
+    setTimeout(() => {
+        if (!event.query.trim().length) {
+            autoFilteredValue2.value = [...autoValue2.value];
+        } else {
+            autoFilteredValue2.value = autoValue2.value.filter((country) => {
+                return country.name.toLowerCase().startsWith(event.query.toLowerCase());
+            });
+        }
+    }, 250);
+}
+
 const provinces = ref([
     { name: 'Toàn quốc', code: 'all' },
     { name: 'Hà Nội', code: 'HNI' },
@@ -75,9 +107,8 @@ const wards = ref([]);
 const getAllBrand = async () => {
     try {
         const res = await axiosInstance.get('/brands');
-        brandList.value = res.data.data.map((element) => {
-            return element;
-        });
+        brandList.value = res.data.data;
+        autoValue.value = res.data.data;
     } catch (error) {
         console.log(error);
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
@@ -149,8 +180,11 @@ const getWardByDistrict = async (districtCode) => {
 };
 const getAllModel = async () => {
     try {
-        const res = await axiosInstance.get(`/models?brandId=${52}`);
-        models.value = res.data.data;
+        if (brand.value.id) {
+            const res = await axiosInstance.get(`/models?brandId=${brand.value.id}`);
+            models.value = res.data.data;
+            autoValue2.value = res.data.data;
+        }
     } catch (error) {
         console.log(error);
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
@@ -162,6 +196,12 @@ const cityChange = () => {
 const districtChange = () => {
     getWardByDistrict(district.value);
 };
+
+onBeforeMount(() => {
+    const userData = store.getters['user/userData'];
+    userPhone.value = userData.phoneNum;
+    userName.value = userData.fullname;
+});
 onMounted(() => {
     getAllBrand();
     getAllCities();
@@ -169,7 +209,7 @@ onMounted(() => {
     getAllOrigin();
     getAllFuel();
     getAllColor();
-    getAllModel();
+    // getAllModel();
 });
 const enableButton = computed(() => {
     return !!brand.value && !!name.value && !!date.value && !!shape.value && !!origin.value && !!statusCar.value && !!price.value;
@@ -290,13 +330,21 @@ const uploadImg = async (element) => {
                             <h5>Thông số kĩ thuật của xe</h5>
 
                             <div class="grid formgrid mt-4">
-                                <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
+                                <!-- <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Hãng sản xuất <b style="color: red">*</b></h5>
                                     <Dropdown :invalid="!brand" v-model="brand" :options="brandList" optionLabel="name" placeholder="Hãng" />
-                                </div>
+                                </div> -->
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
+                                    <div class="font-semibold text-xl mb-2">Hãng sản xuất</div>
+                                    <AutoComplete @change="getAllModel" v-model="brand" :suggestions="autoFilteredValue" optionLabel="name" placeholder="Hãng sản xuất" dropdown display="chip" @complete="searchBrand($event)" />
+                                </div>
+                                <!-- <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Tên xe <b style="color: red">*</b></h5>
                                     <Dropdown v-model="name" :options="models" optionLabel="name" placeholder="Tên xe" />
+                                </div> -->
+                                <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
+                                    <div class="font-semibold text-xl mb-2">Tên xe</div>
+                                    <AutoComplete v-model="name" :suggestions="autoFilteredValue2" optionLabel="name" placeholder="Tên xe" dropdown display="chip" @complete="searchModel($event)" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2">
                                     <h5>Năm sản xuất <b style="color: red">*</b></h5>
@@ -393,15 +441,15 @@ Lưu ý:
                             <div class="form-contact" style="display: flex">
                                 <div class="col-12 mb-2 lg:col-4 lg:mb-2 mt-2">
                                     <h5>Tên:</h5>
-                                    <InputText placeholder="Tên" />
+                                    <InputText placeholder="Tên" v-model="userName" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-4 lg:mb-2 mt-2">
                                     <h5>Liên hệ:</h5>
-                                    <InputText placeholder="SĐT" />
+                                    <InputText placeholder="SĐT" v-model="userPhone" />
                                 </div>
                                 <div class="col-12 mb-2 lg:col-4 lg:mb-2 mt-2">
                                     <h5>Liên hệ khác:</h5>
-                                    <InputText placeholder="SĐT khác" />
+                                    <InputText placeholder="SĐT khác" disabled />
                                 </div>
                             </div>
                             <div class="form-contact" style="display: flex">

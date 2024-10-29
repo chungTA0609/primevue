@@ -20,13 +20,13 @@ const customerService = new CustomerService();
 const productService = new ProductService();
 
 onBeforeMount(() => {
-    productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
+    // productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
     // customerService.getCustomersLarge().then((data) => {
     //     customer1.value = data;
     //     loading1.value = false;
     //     customer1.value.forEach((customer) => (customer.date = new Date(customer.date)));
     // });
-    customerService.getCustomersLarge().then((data) => (customer2.value = data));
+    // customerService.getCustomersLarge().then((data) => (customer2.value = data));
     // customerService.getCustomersMedium().then((data) => (customer3.value = data));
     loading2.value = false;
 

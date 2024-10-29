@@ -1,21 +1,31 @@
 f
 <!-- eslint-disable prettier/prettier -->
 <script setup>
-import { ref, onMounted } from 'vue';
-import { CountryService } from '@/service/CountryService';
-import { NodeService } from '@/service/NodeService';
-import { PhotoService } from '@/service/PhotoService';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import axiosInstance from '../../service/axiosInstance';
 import { useToast } from 'primevue/usetoast';
 
 const toast = useToast();
 const route = useRoute();
-const autoValue = ref(null);
-const images = ref([]);
-const treeSelectNodes = ref(null);
-const countryService = new CountryService();
-const nodeService = new NodeService();
+const transmissionList = ref([
+    {
+        code: 'FWD',
+        name: 'FWD - Dẫn động cầu trước'
+    },
+    {
+        code: 'RWD',
+        name: 'RWD - Dẫn động cầu sau'
+    },
+    {
+        code: '4WD',
+        name: '4WD - Dẫn động 4 bánh'
+    },
+    {
+        code: 'AWD',
+        name: 'AWD - 4 bánh toàn thời gian'
+    }
+]);
 const galleriaResponsiveOptions = ref([
     {
         breakpoint: '1024px',
@@ -34,7 +44,6 @@ const galleriaResponsiveOptions = ref([
         numVisible: 1
     }
 ]);
-const photoService = new PhotoService();
 const dataDetail = ref();
 const getDataBySlug = async () => {
     try {
@@ -47,18 +56,24 @@ const getDataBySlug = async () => {
 };
 onMounted(() => {
     getDataBySlug();
-    countryService.getCountries().then((data) => (autoValue.value = data));
-    nodeService.getTreeNodes().then((data) => (treeSelectNodes.value = data));
-    photoService.getImages().then((data) => (images.value = data));
+});
+
+const tranmissionName = computed(() => {
+    return transmissionList.value.find((el) => {
+        return dataDetail.value.drivetrain ? dataDetail.value.drivetrain.includes(el.code) : '';
+    })?.name;
 });
 </script>
 <template>
     <Toast />
 
     <div class="grid p-fluid">
-        <div class="col-12 md:col-12">
+        <div class="col-12 md:col-12" style="min-width: 1200px">
             <div class="card" v-if="dataDetail">
-                <h5>{{ dataDetail.name }}</h5>
+                <h5>
+                    {{ dataDetail.name }}
+                    {{ dataDetail.price ? ' / ' + dataDetail.price.toLocaleString('en-US') + 'đ (' + dataDetail.priceText + ' đồng)' : '' }}
+                </h5>
                 <div class="grid p-fluid">
                     <div class="col-12 md:col-8">
                         <div class="card mt-4" style="height: 470px">
@@ -130,7 +145,7 @@ onMounted(() => {
                                         </div>
                                         <div class="col-12 mb-2 lg:col-12 lg:mb-2 mt-2 p-fluid" style="display: flex; font-size: 1.5rem">
                                             <p style="margin-right: 12px"><b> Dẫn động: </b></p>
-                                            <p>{{ dataDetail.drivetrain }}</p>
+                                            <p>{{ tranmissionName }}</p>
                                             <hr />
                                         </div>
                                     </div>
@@ -141,12 +156,20 @@ onMounted(() => {
 
                     <div class="col-12 md:col-4">
                         <div class="card mt-4" style="height: 470px">
-                            <Galleria :value="dataDetail.images" :responsiveOptions="galleriaResponsiveOptions" :numVisible="3" :circular="true" containerStyle="max-width: 800px; max-height: 820px; margin: auto">
+                            <Galleria
+                                :nextButton="false"
+                                :prevButton="false"
+                                :value="dataDetail.images"
+                                :responsiveOptions="galleriaResponsiveOptions"
+                                :numVisible="3"
+                                :circular="true"
+                                containerStyle="max-width: 800px; max-height: 820px; margin: auto"
+                            >
                                 <template #item="slotProps">
-                                    <img :src="slotProps.item" :alt="slotProps.item.alt" style="width: 100%; display: block" />
+                                    <img :src="slotProps.item" :alt="slotProps.item.alt" style="width: 350px; height: 350px; display: block" />
                                 </template>
                                 <template #thumbnail="slotProps">
-                                    <img :src="slotProps.item" :alt="slotProps.item.alt" style="width: 100%; display: block" />
+                                    <img :src="slotProps.item" :alt="slotProps.item.alt" style="width: 40px; height: 40px; display: block" />
                                 </template>
                             </Galleria>
                         </div>
@@ -162,18 +185,22 @@ onMounted(() => {
                     <div class="col-12 md:col-4">
                         <div class="card" style="max-height: 180px">
                             <h5>Thông tin liên hệ</h5>
-                            <p><b>Nguyễn Minh Phường </b></p>
-                            <p>Điện thoại: <b>0938 832 385</b></p>
+                            <p>
+                                <b> Tên: {{ dataDetail.username }} </b>
+                            </p>
+                            <p>
+                                Điện thoại: <b>{{ dataDetail.userPhoneNum }}</b>
+                            </p>
                             <p>Địa chỉ: {{ dataDetail.address }}</p>
                         </div>
-                        <div class="card" style="max-height: 270px">
+                        <!-- <div class="card" style="max-height: 270px">
                             <h5>Từ khóa phổ biến</h5>
                             <p>Địa chỉ: 220 Nguyễn Hữu Cảnh</p>
                             <p>Địa chỉ: 220 Nguyễn Hữu Cảnh</p>
                             <p>Địa chỉ: 220 Nguyễn Hữu Cảnh</p>
                             <p>Địa chỉ: 220 Nguyễn Hữu Cảnh</p>
                             <p>Địa chỉ: 220 Nguyễn Hữu Cảnh</p>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>

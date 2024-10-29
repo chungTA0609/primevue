@@ -3,7 +3,7 @@ import { useLayout } from '@/layout/composables/layout';
 import { computed, onMounted } from 'vue';
 import AppConfig from '@/layout/AppConfig.vue';
 import { useRouter } from 'vue-router';
-// import axiosInstance from '../service/axiosInstance';
+import axiosInstance from '../service/axiosInstance';
 import { useStore } from 'vuex';
 import { useToast } from 'primevue/usetoast';
 import { useTokenCookie } from '../service/useTokenCookie';
@@ -15,14 +15,17 @@ const router = useRouter();
 const smoothScroll = (id) => {
     router.push({ path: id });
 };
-// const getMe = async () => {
-//     try {
-//         const res = await axiosInstance.get('/users/me');
-//         console.log(res);
-//     } catch (error) {}
-// };
+const getMe = async () => {
+    try {
+        const res = await axiosInstance.get('/users/me');
+        store.dispatch('user/updateUserData', res.data.data);
+    } catch (error) {
+        console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
+    }
+};
 onMounted(() => {
-    // getMe();
+    getMe();
 });
 const logoUrl = computed(() => {
     return `layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
@@ -34,6 +37,7 @@ const items = [
         command: () => {
             deleteTokenCookie();
             store.dispatch('user/updateIsLogin', false);
+            store.dispatch('user/updateUserData', null);
         }
     }
 ];
@@ -42,6 +46,7 @@ const save = () => {
     toast.add({ severity: 'success', summary: 'Success', detail: 'Data Saved', life: 3000 });
 };
 const isLogin = computed(() => store.getters['user/isLogin']);
+const isAdmin = computed(() => store.getters['user/userData']).role === 'ADMIM';
 </script>
 
 <template>
@@ -79,7 +84,7 @@ const isLogin = computed(() => store.getters['user/isLogin']);
                                 <span>Phụ tùng</span>
                             </a>
                         </li>
-                        <li>
+                        <li v-if="isAdmin">
                             <a @click="smoothScroll('/admin')" class="flex m-0 md:ml-5 px-0 py-3 text-900 font-medium line-height-3 p-ripple" v-ripple>
                                 <span>Admin</span>
                             </a>

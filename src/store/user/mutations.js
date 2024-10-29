@@ -4,6 +4,9 @@ const mutations = {
     },
     setIsLogin(state, isLogin) {
         state.isLogin = isLogin;
+    },
+    setUserData(state, userData) {
+        state.userData = userData;
     }
 };
 

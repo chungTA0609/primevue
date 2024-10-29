@@ -45,11 +45,22 @@ const onSubmit = handleSubmit(async (values) => {
         toast.add({ severity: 'info', summary: 'Lỗi', detail: 'Đăng nhập thành công', life: 3000 });
 
         setTokenCookie(res.data.data.token, 1);
+        getMe();
         router.push('/');
     } catch (error) {
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 });
+
+const getMe = async () => {
+    try {
+        const res = await axiosInstance.get('/users/me');
+        store.dispatch('user/updateUserData', res.data.data);
+    } catch (error) {
+        console.log(error);
+        toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
+    }
+};
 const logoUrl = computed(() => {
     return `/layout/images/${layoutConfig.darkTheme.value ? 'logo-white' : 'logo-dark'}.svg`;
 });
