@@ -38,6 +38,7 @@ const items = [
             deleteTokenCookie();
             store.dispatch('user/updateIsLogin', false);
             store.dispatch('user/updateUserData', null);
+            router.push('/src');
         }
     }
 ];
