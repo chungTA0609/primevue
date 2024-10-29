@@ -43,7 +43,7 @@ const items = [
 ];
 
 const save = () => {
-    toast.add({ severity: 'success', summary: 'Success', detail: 'Data Saved', life: 3000 });
+    toast.add({ severity: 'success', summary: 'Thông tin cá nhân', detail: 'Comming soon', life: 3000 });
 };
 const isLogin = computed(() => store.getters['user/isLogin']);
 const isAdmin = computed(() => store.getters['user/userData']).role === 'ADMIM';
