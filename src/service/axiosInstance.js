@@ -7,7 +7,8 @@ const { getTokenCookie } = useTokenCookie();
 // Create an instance of Axios
 const axiosInstance = axios.create({
     baseURL: 'http://18.139.116.136:8080/api/', // Replace with your API base URL
-    timeout: 10000 // Set a timeout for requests,
+    timeout: 10000, // Set a timeout for requests,
+    Accept: 'application/json'
 });
 
 // Request interceptor to add authorization headers or other transformations
@@ -15,8 +16,11 @@ axiosInstance.interceptors.request.use(
     (config) => {
         let returnConfig = {
             ...config,
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
+            headers: {
+                ...config.headers,
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            }
         };
         // Add any custom headers, like authorization tokens
         const token = getTokenCookie(); // Example: Get token from localStorage
