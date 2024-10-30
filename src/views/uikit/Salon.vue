@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted, computed, reactive, watch } from 'vue';
-import { ProductService } from '@/service/ProductService';
 import axiosInstance from '../../service/axiosInstance';
 import { useRouter } from 'vue-router';
 const dropdownItems = ref([
@@ -20,11 +19,7 @@ const province = ref(1);
 const dropdownItem = ref(0);
 
 const dataviewValue = ref(null);
-const layout = ref('grid');
-const sortOrder = ref(null);
-const sortField = ref(null);
 
-const productService = new ProductService();
 const queryParams = reactive({
     brandId: dropdownItem.value,
     cityId: province.value,
@@ -49,8 +44,7 @@ const changeParam = computed(() => {
     return province.value !== 'aaaaaaaaaa' && dropdownItem.value;
 });
 onMounted(() => {
-    querySalon();
-    productService.getProductsSmall().then((data) => (dataviewValue.value = data));
+    // querySalon();
 });
 
 watch(pagination, (val) => {

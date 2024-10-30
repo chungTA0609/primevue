@@ -6,7 +6,7 @@ import { useTokenCookie } from './useTokenCookie';
 const { getTokenCookie } = useTokenCookie();
 // Create an instance of Axios
 const axiosInstance = axios.create({
-    baseURL: 'https://a73f-171-241-35-243.ngrok-free.app/api/', // Replace with your API base URL
+    baseURL: 'http://18.139.116.136:8080/api/', // Replace with your API base URL
     timeout: 10000 // Set a timeout for requests,
 });
 

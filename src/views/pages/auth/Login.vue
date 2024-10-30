@@ -48,6 +48,7 @@ const onSubmit = handleSubmit(async (values) => {
         getMe();
         router.push('/');
     } catch (error) {
+        console.log(error);
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 });

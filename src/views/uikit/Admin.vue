@@ -7,17 +7,13 @@ import AppConfig from '../../layout/AppConfig.vue';
 import { useLayout } from '@/layout/composables/layout';
 
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
-import { CustomerService } from '@/service/CustomerService';
-import { ProductService } from '@/service/ProductService';
-// import { useRouter } from 'vue-router';
-const customer2 = ref(null);
+import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
+
+const router = useRouter();
 const filters1 = ref(null);
 const loading2 = ref(null);
-// const idFrozen = ref(false);
-const products = ref(null);
-// const router = useRouter();
-const customerService = new CustomerService();
-const productService = new ProductService();
+const store = useStore();
 
 onBeforeMount(() => {
     // productService.getProductsWithOrdersSmall().then((data) => (products.value = data));
@@ -31,7 +27,9 @@ onBeforeMount(() => {
     loading2.value = false;
 
     initFilters1();
+    if (!isAdmin) router.push('/');
 });
+const isAdmin = computed(() => store.getters['user/userData']).role === 'ADMIM';
 
 const initFilters1 = () => {
     filters1.value = {
