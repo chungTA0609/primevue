@@ -15,7 +15,7 @@ axiosInstance.interceptors.request.use(
     (config) => {
         let returnConfig = {
             ...config,
-            Accept: '*/*',
+            Accept: 'application/json',
             'Content-Type': 'application/json'
         };
         // Add any custom headers, like authorization tokens
