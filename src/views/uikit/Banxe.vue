@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed, reactive, watch } from 'vue';
+import { ref, onMounted, reactive, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { useToast } from 'primevue/usetoast';
@@ -9,39 +9,14 @@ const confirmPopup = useConfirm();
 const toast = useToast();
 
 const router = useRouter();
-const dropdownValues = ref([
-    { name: 'New York', code: 'NY' },
-    { name: 'Rome', code: 'RM' },
-    { name: 'London', code: 'LDN' },
-    { name: 'Istanbul', code: 'IST' },
-    { name: 'Paris', code: 'PRS' }
-]);
-const brand = ref(dropdownValues.value[0]);
-const name = ref(dropdownValues.value[0]);
-const date = ref(dropdownValues.value[0]);
-const version = ref(null);
-const shape = ref(dropdownValues.value[0]);
-const origin = ref(dropdownValues.value[0]);
-const kmUsed = ref(null);
-const statusCar = ref(dropdownValues.value[0]);
-const gear = ref(dropdownValues.value[0]);
-const fuelType = ref(dropdownValues.value[0]);
-const price = ref(null);
-const interior = ref(null);
-const exterior = ref(null);
-const places = ref(null);
-const driveSystem = ref(null);
+
 // const op = ref(null);
 const pagination = ref(1);
 const dateExpired = ref(null);
 
 const listSellCar = reactive([]);
-const fileArr = reactive([]);
 onMounted(() => {
     if (listSellCar.length <= 0) router.push('/ban-xe/dang-tin');
-});
-const enableButton = computed(() => {
-    return !!brand.value && !!name.value && !!date.value && !!shape.value && !!origin.value && !!statusCar.value && !!price.value;
 });
 
 const confirm = (event) => {
@@ -58,7 +33,7 @@ const confirm = (event) => {
         }
     });
 };
-watch(pagination, (val) => {
+watch(pagination, () => {
     // queryParams.page = val / 10 + 1;
     // queryCar();
 });

@@ -2,12 +2,8 @@
 import { ref, onMounted } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
-import { ProductService } from '@/service/ProductService';
 import axiosInstance from '../../service/axiosInstance';
-onMounted(() => {
-    productService.getProductss().then((data) => (products.value = data));
-});
-const productService = new ProductService();
+onMounted(() => {});
 const toast = useToast();
 const dt = ref();
 const products = ref();

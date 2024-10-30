@@ -1,8 +1,6 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue';
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
-import { CustomerService } from '@/service/CustomerService';
-import { ProductService } from '@/service/ProductService';
 import { useRouter } from 'vue-router';
 const customer2 = ref(null);
 const filters1 = ref(null);
@@ -10,8 +8,6 @@ const loading2 = ref(null);
 const idFrozen = ref(false);
 const products = ref(null);
 const router = useRouter();
-const customerService = new CustomerService();
-const productService = new ProductService();
 
 const getSeverity = (status) => {
     switch (status) {

@@ -2,10 +2,6 @@ f
 <!-- eslint-disable prettier/prettier -->
 <script setup>
 import { ref, onMounted } from 'vue';
-import { CountryService } from '@/service/CountryService';
-import { NodeService } from '@/service/NodeService';
-import { PhotoService } from '@/service/PhotoService';
-import { ProductService } from '@/service/ProductService';
 import { useRouter } from 'vue-router';
 import { GoogleMap, Marker } from 'vue3-google-map';
 
@@ -17,7 +13,6 @@ const productService = new ProductService();
 const images = ref([]);
 const dataviewValue = ref(null);
 const treeSelectNodes = ref(null);
-const countryService = new CountryService();
 const nodeService = new NodeService();
 const layout = ref('grid');
 
@@ -41,13 +36,7 @@ const galleriaResponsiveOptions = ref([
 ]);
 const photoService = new PhotoService();
 
-onMounted(() => {
-    countryService.getCountries().then((data) => (autoValue.value = data));
-    nodeService.getTreeNodes().then((data) => (treeSelectNodes.value = data));
-    productService.getProductsSmall().then((data) => (dataviewValue.value = data));
-
-    photoService.getImages().then((data) => (images.value = data));
-});
+onMounted(() => {});
 </script>
 <template>
     <div class="grid p-fluid">
