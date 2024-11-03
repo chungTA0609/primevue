@@ -7,7 +7,6 @@ import { useToast } from 'primevue/usetoast';
 const toast = useToast();
 
 const dt = ref();
-const products = ref();
 const models = ref();
 const isLoading = ref(false);
 const modelDialog = ref(false);
@@ -36,10 +35,8 @@ const saveProduct = async () => {
             // const res = await uploadImg(img.value);
             // product.value.logo = res.data.data ?? '';
             if (product.value.id) {
-                products.value[findIndexById(product.value.id)] = product.value;
                 await axiosInstance.put(`/styles/${product.value.id}`, product.value);
             } else {
-                products.value.push(product.value);
                 await axiosInstance.post(`/styles`, product.value);
             }
             modelDialog.value = false;
@@ -76,18 +73,6 @@ const deleteProduct = async (product) => {
         deleteModelDialog.value = false;
     }
 };
-const findIndexById = (id) => {
-    let index = -1;
-    for (let i = 0; i < products.value.length; i++) {
-        if (products.value[i].id === id) {
-            index = i;
-            break;
-        }
-    }
-
-    return index;
-};
-
 onMounted(() => {
     getAllStyle();
 });

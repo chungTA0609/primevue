@@ -7,7 +7,6 @@ import { useToast } from 'primevue/usetoast';
 const toast = useToast();
 const isLoading = ref(false);
 const dt = ref();
-const products = ref();
 const brands = ref();
 const brandDialog = ref(false);
 const deleteBrandDialog = ref(false);
@@ -36,10 +35,8 @@ const saveProduct = async () => {
             // product.value.logo = '';
             isLoading.value = true;
             if (product.value.id) {
-                products.value[findIndexById(product.value.id)] = product.value;
                 await axiosInstance.put(`/fuels/${product.value.id}`, product.value);
             } else {
-                products.value.push(product.value);
                 await axiosInstance.post(`/fuels`, product.value);
             }
             brandDialog.value = false;
@@ -76,17 +73,6 @@ const deleteProduct = async (product) => {
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
         deleteBrandDialog.value = false;
     }
-};
-const findIndexById = (id) => {
-    let index = -1;
-    for (let i = 0; i < products.value.length; i++) {
-        if (products.value[i].id === id) {
-            index = i;
-            break;
-        }
-    }
-
-    return index;
 };
 
 onMounted(() => {

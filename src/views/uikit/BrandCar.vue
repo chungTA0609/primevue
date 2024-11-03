@@ -3,10 +3,10 @@ import { ref, onMounted } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
 import { useToast } from 'primevue/usetoast';
 import axiosInstance from '../../service/axiosInstance';
+import axios from 'axios';
 onMounted(() => {});
 const toast = useToast();
 const dt = ref();
-const products = ref();
 const brands = ref();
 const brandDialog = ref(false);
 const deleteBrandDialog = ref(false);
@@ -38,10 +38,8 @@ const saveProduct = async () => {
             product.value.logo = res.data.data ?? '';
             // product.value.logo = '';
             if (product.value.id) {
-                products.value[findIndexById(product.value.id)] = product.value;
                 await axiosInstance.put(`/brands/${product.value.id}`, product.value);
             } else {
-                products.value.push(product.value);
                 await axiosInstance.post(`/brands`, product.value);
             }
             brandDialog.value = false;
@@ -77,24 +75,13 @@ const deleteProduct = async (product) => {
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
     }
 };
-const findIndexById = (id) => {
-    let index = -1;
-    for (let i = 0; i < products.value.length; i++) {
-        if (products.value[i].id === id) {
-            index = i;
-            break;
-        }
-    }
-
-    return index;
-};
 
 const uploadImg = async (element) => {
     try {
         const formData = new FormData();
         formData.append('file', element);
 
-        return await axiosInstance.post('/files/upload', formData, {
+        return await axios.post('http://18.139.116.136:8080/api/files/upload', formData, {
             headers: {
                 Accept: undefined
             }

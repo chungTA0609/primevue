@@ -27,9 +27,14 @@ onBeforeMount(() => {
     loading2.value = false;
 
     initFilters1();
-    if (!isAdmin) router.push('/');
+    if (!isAdmin.value) router.push('/');
 });
-const isAdmin = computed(() => store.getters['user/userData']).role === 'ADMIM';
+const isAdmin = computed(() => {
+    const userData = store.getters['user/userData'];
+
+    if (userData) return store.getters['user/userData'].role === 'ADMIN';
+    return false;
+});
 
 const initFilters1 = () => {
     filters1.value = {

@@ -47,7 +47,12 @@ const save = () => {
     toast.add({ severity: 'success', summary: 'Thông tin cá nhân', detail: 'Comming soon', life: 3000 });
 };
 const isLogin = computed(() => store.getters['user/isLogin']);
-const isAdmin = computed(() => store.getters['user/userData']).role === 'ADMIM';
+const isAdmin = computed(() => {
+    const userData = store.getters['user/userData'];
+
+    if (userData) return store.getters['user/userData'].role === 'ADMIN';
+    return false;
+});
 </script>
 
 <template>

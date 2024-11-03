@@ -7,7 +7,6 @@ import { useToast } from 'primevue/usetoast';
 const toast = useToast();
 onMounted(() => {});
 const dt = ref();
-const products = ref();
 const brands = ref();
 const brandDialog = ref(false);
 const deleteBrandDialog = ref(false);
@@ -37,12 +36,10 @@ const saveProduct = async () => {
 
             // const res = await uploadImg(img.value);
             // product.value.logo = res.data.data ?? '';
-            product.value.logo = '';
+            product.value.hex = product.value.hex ? product.value.hex : '#ff0000';
             if (product.value.id) {
-                products.value[findIndexById(product.value.id)] = product.value;
                 await axiosInstance.put(`/colors/${product.value.id}`, { ...product.value, hex: product.value.hex.includes('#') ? product.value.hex : '#' + product.value.hex });
             } else {
-                products.value.push(product.value);
                 await axiosInstance.post(`/colors`, { ...product.value, hex: product.value.hex.includes('#') ? product.value.hex : '#' + product.value.hex });
             }
             brandDialog.value = false;
@@ -79,17 +76,6 @@ const deleteProduct = async (product) => {
         toast.add({ severity: 'error', summary: 'Lỗi', detail: 'Lỗi hệ thống', life: 3000 });
         deleteBrandDialog.value = false;
     }
-};
-const findIndexById = (id) => {
-    let index = -1;
-    for (let i = 0; i < products.value.length; i++) {
-        if (products.value[i].id === id) {
-            index = i;
-            break;
-        }
-    }
-
-    return index;
 };
 
 onMounted(() => {

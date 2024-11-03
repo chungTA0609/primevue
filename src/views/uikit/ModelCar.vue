@@ -7,7 +7,6 @@ import { useToast } from 'primevue/usetoast';
 const toast = useToast();
 onMounted(() => {});
 const dt = ref();
-const products = ref();
 const models = ref();
 const brand = ref(null);
 const brands = ref();
@@ -42,10 +41,8 @@ const saveProduct = async () => {
             product.value.logo = res.data.data ?? '';
             product.value.brandId = brand.value.id;
             if (product.value.id) {
-                products.value[findIndexById(product.value.id)] = product.value;
                 await axiosInstance.put(`/models/${product.value.id}`, product.value);
             } else {
-                products.value.push(product.value);
                 await axiosInstance.post(`/models`, product.value);
             }
             isLoading.value = false;
@@ -94,17 +91,6 @@ const deleteProduct = async (product) => {
         isLoading.value = false;
         deleteModelDialog.value = false;
     }
-};
-const findIndexById = (id) => {
-    let index = -1;
-    for (let i = 0; i < products.value.length; i++) {
-        if (products.value[i].id === id) {
-            index = i;
-            break;
-        }
-    }
-
-    return index;
 };
 
 onMounted(() => {
