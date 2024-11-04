@@ -92,7 +92,7 @@ const queryCar = async (type = null) => {
             const res = await axiosInstance.post('/cars/query', {
                 ...queryParams
             });
-            car.value = res.data.data;
+            car.value.list = res.data.data;
         }, 500);
     } catch (error) {
         console.log(error);

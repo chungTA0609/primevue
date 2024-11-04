@@ -199,8 +199,10 @@ const districtChange = () => {
 
 onBeforeMount(() => {
     const userData = store.getters['user/userData'];
-    userPhone.value = userData.phoneNum;
-    userName.value = userData.fullname;
+    if (userData) {
+        userPhone.value = userData.phoneNum;
+        userName.value = userData.fullname;
+    }
 });
 onMounted(() => {
     getAllBrand();
